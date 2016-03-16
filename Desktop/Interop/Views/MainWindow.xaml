@@ -1,0 +1,45 @@
+﻿<Window x:Class="Interop.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:prism="http://prismlibrary.com/"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        Title="{Binding Title}" Height="600" Width="800">
+    <DockPanel LastChildFill="True">
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="225" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem Grid.Column="0" HorizontalContentAlignment="Stretch" >
+                <ContentControl prism:RegionManager.RegionName="ServerMessagesRegion" />
+            </StatusBarItem>
+            <Separator Grid.Column="1" />
+            <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Stretch">
+                <ContentControl prism:RegionManager.RegionName="SessionRegion" />
+            </StatusBarItem>
+        </StatusBar>
+        
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="12*"/>
+            </Grid.RowDefinitions>
+            
+            <ContentControl Grid.Column="0" Grid.Row="1" prism:RegionManager.RegionName="ObstaclesRegion" />
+            <ContentControl Grid.Column="0" Grid.Row="0" prism:RegionManager.RegionName="TelemetryRegion" />
+            <ContentControl Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" prism:RegionManager.RegionName="TargetsRegion" />
+        </Grid>
+    </DockPanel>
+</Window>
