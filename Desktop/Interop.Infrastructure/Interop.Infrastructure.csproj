@@ -57,8 +57,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Events\UpdateStaticObstacles.cs" />
-    <Compile Include="Events\UpdateDynamicObstacles.cs" />
+    <Compile Include="Events\UpdateObstaclesEvent.cs" />
     <Compile Include="Events\UpdateServerInfoEvent.cs" />
     <Compile Include="Events\UpdateTargetsEvent.cs" />
     <Compile Include="Interfaces\IHttpService.cs" />

@@ -1,24 +1,106 @@
 ﻿using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Interop.Infrastructure.Events;
 using Interop.Infrastructure.Interfaces;
+using Interop.Infrastructure.Models;
 
 namespace Interop.Modules.Server.ViewModels
 {
     public class ServerInfoViewModel : BindableBase
     {
         IHttpService _httpService;
+        IEventAggregator _eventAggregator;
 
-        public ServerInfoViewModel(IHttpService httpService)
+        public ServerInfoViewModel(IEventAggregator eventAggregator ,IHttpService httpService)
         {
-            _httpService = httpService;
+            if (eventAggregator == null)
+            {
+                throw new ArgumentNullException("eventAggregator");
+            }
 
-            Title = "Server Info Region";
+            if (httpService == null)
+            {
+                throw new ArgumentNullException("httpService");
+            }
+
+            _eventAggregator = eventAggregator;
+            _httpService = httpService;
+            
+            _eventAggregator.GetEvent<UpdateServerInfoEvent>().Subscribe(Update_ServerInfo);
         }
 
-        public string Title { get; set; }
+        public void Update_ServerInfo(ServerInfo serverInfo)
+        {
+            this.ServerStatus = String.Format("{0} - {1}", serverInfo.server_time, serverInfo.message);
+        }
+
+        string _serverStatus = string.Empty;
+        public string ServerStatus
+        {
+            get
+            {
+               return this._serverStatus;
+            }
+            set
+            {
+                if (SetProperty(ref _serverStatus, value))
+                {
+                    //this.OnPropertyChanged(() => this.);
+                }
+            }
+        }
+
+        string _message = string.Empty;
+        public string Message
+        {
+            get
+            {
+                return this._message;
+            }
+            set
+            {
+                if (SetProperty(ref _message, value))
+                {
+                    //this.OnPropertyChanged(() => this.);
+                }
+            }
+        }
+
+        string _messageTimeStamp = string.Empty;
+        public string MessageTimeStamp
+        {
+            get
+            {
+                return this._messageTimeStamp;
+            }
+            set
+            {
+                if (SetProperty(ref _messageTimeStamp, value))
+                {
+                    //this.OnPropertyChanged(() => this.);
+                }
+            }
+        }
+
+        string _serverTime = string.Empty;
+        public string ServerTime
+        {
+            get
+            {
+                return this._serverTime;
+            }
+            set
+            {
+                if (SetProperty(ref _serverTime, value))
+                {
+                    //this.OnPropertyChanged(() => this.);
+                }
+            }
+        }
     }
 }
