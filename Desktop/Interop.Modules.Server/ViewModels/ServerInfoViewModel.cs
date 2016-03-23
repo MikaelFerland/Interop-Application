@@ -13,7 +13,6 @@ namespace Interop.Modules.Server.ViewModels
 {
     public class ServerInfoViewModel : BindableBase
     {
-        IHttpService _httpService;
         IEventAggregator _eventAggregator;
 
         public ServerInfoViewModel(IEventAggregator eventAggregator ,IHttpService httpService)
@@ -22,14 +21,7 @@ namespace Interop.Modules.Server.ViewModels
             {
                 throw new ArgumentNullException("eventAggregator");
             }
-
-            if (httpService == null)
-            {
-                throw new ArgumentNullException("httpService");
-            }
-
             _eventAggregator = eventAggregator;
-            _httpService = httpService;
             
             _eventAggregator.GetEvent<UpdateServerInfoEvent>().Subscribe(Update_ServerInfo);
         }

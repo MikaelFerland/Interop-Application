@@ -109,3 +109,7 @@ C:\Users\Xawtor\OneDrive\Documents\Visual Studio 2015\Projects\Interop-Applicati
 C:\Users\Xawtor\OneDrive\Documents\Visual Studio 2015\Projects\Interop-Application\Desktop\Interop\obj\Debug\Interop.csproj.GenerateResource.Cache
 C:\Users\Xawtor\OneDrive\Documents\Visual Studio 2015\Projects\Interop-Application\Desktop\Interop\obj\Debug\Interop.exe
 C:\Users\Xawtor\OneDrive\Documents\Visual Studio 2015\Projects\Interop-Application\Desktop\Interop\obj\Debug\Interop.pdb
+C:\Users\Xawtor\OneDrive\Documents\Visual Studio 2015\Projects\Interop-Application\Desktop\Interop\bin\Debug\GMap.NET.Core.dll
+C:\Users\Xawtor\OneDrive\Documents\Visual Studio 2015\Projects\Interop-Application\Desktop\Interop\bin\Debug\GMap.NET.WindowsPresentation.dll
+C:\Users\Xawtor\OneDrive\Documents\Visual Studio 2015\Projects\Interop-Application\Desktop\Interop\bin\Debug\GMap.NET.Core.xml
+C:\Users\Xawtor\OneDrive\Documents\Visual Studio 2015\Projects\Interop-Application\Desktop\Interop\bin\Debug\GMap.NET.WindowsPresentation.xml

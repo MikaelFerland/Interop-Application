@@ -8,7 +8,7 @@
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Background="Purple">
-        <Label HorizontalAlignment="Stretch" VerticalAlignment="Center"  FontSize="35" Content="{Binding Title}"/>            
+    <Grid>
+        <ListView HorizontalAlignment="Stretch" VerticalAlignment="Top"  FontSize="35" ItemsSource="{Binding Targets}"/>            
     </Grid>
 </UserControl>

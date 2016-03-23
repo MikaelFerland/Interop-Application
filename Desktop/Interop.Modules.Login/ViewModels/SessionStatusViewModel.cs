@@ -1,18 +1,48 @@
 ﻿using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Interop.Infrastructure.Events;
+using Interop.Infrastructure.Models;
+
 namespace Interop.Modules.Login.ViewModels
 {
     public class SessionStatusViewModel : BindableBase
     {
-        public SessionStatusViewModel()
+        IEventAggregator _eventAggregator;
+
+        public SessionStatusViewModel(IEventAggregator eventAggregator)
         {
-            Title = "Session Status Region";
+            if (eventAggregator == null)
+            {
+                throw new ArgumentNullException("eventAggregator");
+            }
+            _eventAggregator = eventAggregator;
+            _eventAggregator.GetEvent<UpdateLoginStatusEvent>().Subscribe(Update_SessionStatus);
         }
 
-        public string Title { get; set; }
+        public void Update_SessionStatus(string sessionStatus)
+        {
+            this.SessionStatus = sessionStatus;
+        }
+
+        string _sessionStatus = string.Empty;
+        public string SessionStatus
+        {
+            get
+            {
+                return this._sessionStatus;
+            }
+            set
+            {
+                if (SetProperty(ref _sessionStatus, value))
+                {
+                    //this.OnPropertyChanged(() => this.);
+                }
+            }
+        }
     }
 }

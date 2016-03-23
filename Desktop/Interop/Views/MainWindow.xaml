@@ -12,16 +12,16 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="225" />
+                            <ColumnDefinition Width="140" />
                         </Grid.ColumnDefinitions>
                     </Grid>
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
-            <StatusBarItem Grid.Column="0" HorizontalContentAlignment="Stretch" >
+            <StatusBarItem Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" >
                 <ContentControl prism:RegionManager.RegionName="ServerMessagesRegion" />
             </StatusBarItem>
             <Separator Grid.Column="1" />
-            <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Stretch">
+            <StatusBarItem Grid.Column="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                 <ContentControl prism:RegionManager.RegionName="SessionRegion" />
             </StatusBarItem>
         </StatusBar>

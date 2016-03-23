@@ -5,10 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Interop.Modules.Obstacles.Views"
              xmlns:prism="http://prismlibrary.com/"
+             xmlns:m="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation"
              prism:ViewModelLocator.AutoWireViewModel="True"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Background="Blue">
-        <Label HorizontalAlignment="Stretch" VerticalAlignment="Center"  FontSize="35" Content="{Binding Title}"/>
+    <Grid>
+        <m:GMapControl Zoom="13" MaxZoom="24" MinZoom="1" MapProvider="{Binding Provider}"/>
     </Grid>
 </UserControl>

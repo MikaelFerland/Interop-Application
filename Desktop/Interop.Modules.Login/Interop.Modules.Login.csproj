@@ -86,7 +86,12 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Interop.Infrastructure\Interop.Infrastructure.csproj">
+      <Project>{097d108e-2024-492c-a69b-76792e63c08e}</Project>
+      <Name>Interop.Infrastructure</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Page Include="Views\SessionStatusView.xaml">
       <SubType>Designer</SubType>

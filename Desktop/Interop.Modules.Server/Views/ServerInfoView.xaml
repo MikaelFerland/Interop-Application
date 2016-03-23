@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     
-    <Grid Background="Black">
-        <Label HorizontalAlignment="Stretch" VerticalAlignment="Center" Foreground="White" FontSize="10" Content="{Binding ServerStatus}"/>
+    <Grid>
+        <Label HorizontalAlignment="Stretch" VerticalAlignment="Center" Foreground="Black" FontSize="10" Content="{Binding ServerStatus}"/>
     </Grid>
 </UserControl>

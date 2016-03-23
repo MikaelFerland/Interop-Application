@@ -57,6 +57,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\UpdateLoginStatusEvent.cs" />
     <Compile Include="Events\UpdateObstaclesEvent.cs" />
     <Compile Include="Events\UpdateServerInfoEvent.cs" />
     <Compile Include="Events\UpdateTargetsEvent.cs" />

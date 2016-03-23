@@ -21,6 +21,9 @@ namespace Interop.Modules.Client.Services
 {
     public class HttpService : IHttpService
     {
+        const string USER = "simpleuser";
+        const string PASS = "simplepass";
+
         static object[] REQUESTS = { new GetServerInfo(), new GetTargets(), new GetObstacles()};
         BackgroundWorker bw = new BackgroundWorker();
 
@@ -35,13 +38,15 @@ namespace Interop.Modules.Client.Services
             }
             _eventAggregator = eventAggregator;
 
-            Login();
+            if (true == Login())
+            {
+                bw.WorkerSupportsCancellation = true;
+                bw.WorkerReportsProgress = true;
 
-            bw.WorkerSupportsCancellation = true;
-            bw.WorkerReportsProgress = true;
-
-            bw.DoWork += Bw_DoWork;
-            bw.RunWorkerAsync();
+                bw.DoWork += Bw_DoWork;
+                bw.RunWorkerAsync();
+                _eventAggregator.GetEvent<UpdateLoginStatusEvent>().Publish(string.Format("Connected as {0}", USER));
+            }
         }
 
         private void Bw_DoWork(object sender, DoWorkEventArgs e)
@@ -78,7 +83,7 @@ namespace Interop.Modules.Client.Services
                 client.BaseAddress = new Uri("http://mikaelferland.com:80/");
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
+                
                 // HTTP GET
                 HttpResponseMessage response = await client.GetAsync(request.Endpoint);
                 if (response.IsSuccessStatusCode)
