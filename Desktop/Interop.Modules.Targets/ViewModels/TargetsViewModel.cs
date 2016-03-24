@@ -3,7 +3,6 @@ using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Interop.Infrastructure.Events;
 using Interop.Infrastructure.Models;
@@ -22,8 +21,7 @@ namespace Interop.Modules.Targets.ViewModels
                 throw new ArgumentNullException("eventAggregator");
             }
             _eventAggregator = eventAggregator;
-
-            Title = "Targets Region";
+             
 
             _eventAggregator.GetEvent<UpdateTargetsEvent>().Subscribe(Update_Targets);
         }
@@ -32,8 +30,6 @@ namespace Interop.Modules.Targets.ViewModels
         {
             this.Targets = new ObservableCollection<Target>(targets);
         }
-
-        public string Title { get; set; }
 
         ObservableCollection<Target> _targets = new ObservableCollection<Target>(new List<Target>());
         public ObservableCollection<Target> Targets

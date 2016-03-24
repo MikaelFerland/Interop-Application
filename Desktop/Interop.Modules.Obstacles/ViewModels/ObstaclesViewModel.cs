@@ -1,31 +1,33 @@
-﻿using Prism.Commands;
-using Prism.Events;
+﻿using Prism.Events;
 using Prism.Mvvm;
+using Prism.Regions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 using GMap.NET;
 using GMap.NET.MapProviders;
 
 using Interop.Infrastructure.Events;
-using Interop.Infrastructure.Models;
 
 namespace Interop.Modules.Obstacles.ViewModels
 {
     public class ObstaclesViewModel : BindableBase
     {
         IEventAggregator _eventAggregator;
-
-        public ObstaclesViewModel(IEventAggregator eventAggregator)
+        readonly Views.ObstaclesView _view;
+        
+        public ObstaclesViewModel(IEventAggregator eventAggregator, IRegion region)
         {
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
             }
-            _eventAggregator = eventAggregator;
 
-            Title = "Obstacles Region";
+            if (region == null)
+            {
+                throw new ArgumentNullException("region");
+            }
+            _eventAggregator = eventAggregator;
+                        
             Provider = GMapProviders.OpenStreetMap;
             
             _eventAggregator.GetEvent<UpdateObstaclesEvent>().Subscribe(Update_Obstacles);
@@ -36,7 +38,6 @@ namespace Interop.Modules.Obstacles.ViewModels
             this.Position = new PointLatLng(obstacles.moving_obstacles[0].latitude, obstacles.moving_obstacles[0].longitude);
         }
 
-        public string Title { get; set; }
         public GMapProvider Provider {get; set; }
 
         PointLatLng _position = new PointLatLng(45.4946761, -73.5622961);

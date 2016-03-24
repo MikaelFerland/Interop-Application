@@ -4,7 +4,7 @@
 library
 C#
 .cs
-C:\Users\Xawtor\OneDrive\Documents\Visual Studio 2015\Projects\Interop-Application\Desktop\Interop.Modules.Login\obj\Debug\
+C:\Users\mike1\OneDrive\Documents\Visual Studio 2015\Projects\Interop-Application\Desktop\Interop.Modules.Login\obj\Debug\
 Interop.Modules.Login
 none
 false
@@ -12,9 +12,9 @@ DEBUG;TRACE
 
 1-164351355
 
-102127045558
-68-769862235
+101340092732
+68-1058471828
 Views\SessionStatusView.xaml;
 
-True
+False
 

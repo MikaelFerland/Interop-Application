@@ -4,7 +4,7 @@
 library
 C#
 .cs
-C:\Users\Xawtor\OneDrive\Documents\Visual Studio 2015\Projects\Interop-Application\Desktop\Interop.Modules.Server\obj\Debug\
+C:\Users\mike1\OneDrive\Documents\Visual Studio 2015\Projects\Interop-Application\Desktop\Interop.Modules.Server\obj\Debug\
 Interop.Modules.Server
 none
 false
@@ -12,9 +12,9 @@ DEBUG;TRACE
 
 11052423202
 
-10-1454987143
-68-769862235
+102053027327
+68-1058471828
 Views\ServerInfoView.xaml;
 
-True
+False
 

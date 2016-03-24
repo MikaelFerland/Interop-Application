@@ -7,9 +7,9 @@
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             >
     
     <Grid>
-        <Label HorizontalAlignment="Stretch" VerticalAlignment="Center" Foreground="Black" FontSize="10" Content="{Binding ServerStatus}"/>
+        <Label HorizontalAlignment="Stretch" VerticalAlignment="Center" Foreground="Black" FontSize="12" Content="{Binding ServerStatus}"/>
     </Grid>
 </UserControl>
