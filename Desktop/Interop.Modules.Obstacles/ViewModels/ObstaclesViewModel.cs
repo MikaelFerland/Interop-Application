@@ -5,34 +5,87 @@ using System;
 
 using GMap.NET;
 using GMap.NET.MapProviders;
+using GMap.NET.WindowsPresentation;
 
 using Interop.Infrastructure.Events;
+using Interop.Infrastructure.Interfaces;
+
 using System.Windows;
 
 namespace Interop.Modules.Obstacles.ViewModels
 {
     public class ObstaclesViewModel : BindableBase
     {
-        IEventAggregator _eventAggregator;
-        
-        public ObstaclesViewModel(IEventAggregator eventAggregator)
+        IEventAggregator _eventAggregator;        
+        GMapControl _map;
+
+        public ObstaclesViewModel(IEventAggregator eventAggregator, IView view)
         {
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
             }
+
+            if (view == null)
+            {
+                throw new ArgumentNullException("obstaclesView");
+            }
+
             _eventAggregator = eventAggregator;
             
+            _map = (view as Views.ObstaclesView).Map;
+                        
             _eventAggregator.GetEvent<UpdateObstaclesEvent>().Subscribe(Update_Obstacles);
             //TODO: Suscribe to Telemetry event to get the drono on the map
         }
 
         public void Update_Obstacles(Infrastructure.Models.Obstacles obstacles)
         {
-            //TODO: Update each obstacles with their form on the map
+            //TODO: Update each obstacles with their radius on the map
+            SetObstacles(obstacles);
 
-            //Thid is for demo only it will be replace by the todo above
+            //TODO: Remove the following line when the deebug will be finish
             this.Position = new Point(obstacles.moving_obstacles[0].latitude, obstacles.moving_obstacles[0].longitude);
+        }
+
+        public void SetObstacles(Infrastructure.Models.Obstacles obstacles)
+        {
+            // We are able to modify the markers collection only if we are on the same thread
+            // http://stackoverflow.com/questions/18331723/this-type-of-collectionview-does-not-support-changes-to-its-sourcecollection-fro
+            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+            {
+                _map.Markers.Clear();
+
+                //Update static obstacles
+                foreach (var obstacle in obstacles.stationary_obstacles)
+                {
+                    var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
+                    var shape = new System.Windows.Shapes.Ellipse();
+                    shape.Height = obstacle.cylinder_radius;
+                    shape.Width = obstacle.cylinder_radius;
+                    shape.Fill = System.Windows.Media.Brushes.Green;
+                    marker.Shape = shape;              
+                     _map.Markers.Add(marker);
+                }
+
+                //Update the moving obstacles
+                foreach (var obstacle in obstacles.moving_obstacles)
+                {
+                    var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
+                    var shape = new System.Windows.Shapes.Ellipse();
+                    shape.Height = obstacle.sphere_radius;
+                    shape.Width = obstacle.sphere_radius;
+                    shape.Fill = System.Windows.Media.Brushes.Red;
+                    marker.Shape = shape;
+                    _map.Markers.Add(marker);
+                }
+            });
+        }
+
+        public void Update_DronePosition()
+        {            
+            //TODO: Update the map center with drone position when the telemetry module will be done
+            //this.Position = new Point(drone.latitude, drone.longitude);
         }
 
         /// <summary>

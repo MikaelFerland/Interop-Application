@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Prism.Events;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +19,13 @@ namespace Interop.Modules.Obstacles.Views
     /// <summary>
     /// Interaction logic for ObstaclesView.xaml
     /// </summary>
-    public partial class ObstaclesView : UserControl
+    public partial class ObstaclesView : UserControl, Infrastructure.Interfaces.IView
     {
-        public ObstaclesView()
+        public ObstaclesView(IEventAggregator eventAggregator)
         {
             InitializeComponent();
+            DataContext = new ViewModels.ObstaclesViewModel(eventAggregator, this);
         }
+
     }
 }

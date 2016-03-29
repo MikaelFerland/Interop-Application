@@ -63,6 +63,7 @@
     <Compile Include="Events\UpdateTargetsEvent.cs" />
     <Compile Include="Interfaces\IHttpService.cs" />
     <Compile Include="Interfaces\IRequest.cs" />
+    <Compile Include="Interfaces\IView.cs" />
     <Compile Include="Models\Obstacles.cs" />
     <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="Models\Target.cs" />

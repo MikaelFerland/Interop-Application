@@ -6,10 +6,10 @@
              xmlns:local="clr-namespace:Interop.Modules.Obstacles.Views"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:m="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation"
-             prism:ViewModelLocator.AutoWireViewModel="True"
+             prism:ViewModelLocator.AutoWireViewModel="False"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <m:GMapControl Zoom="13" MaxZoom="24" MapPoint="{Binding Position}" MinZoom="1" MapProvider="{Binding Provider}"/>
+        <m:GMapControl x:Name="Map" Zoom="13" MinZoom="1" MaxZoom="24" MapProvider="{Binding Provider}" MapPoint="{Binding Position}"/>
     </Grid>
 </UserControl>
