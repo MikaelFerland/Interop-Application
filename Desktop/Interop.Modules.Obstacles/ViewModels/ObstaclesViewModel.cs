@@ -16,8 +16,9 @@ namespace Interop.Modules.Obstacles.ViewModels
 {
     public class ObstaclesViewModel : BindableBase
     {
-        IEventAggregator _eventAggregator;        
-        GMapControl _map;
+        IEventAggregator _eventAggregator;
+        Views.Map _map;
+        Views.ObstaclesView _view;
 
         public ObstaclesViewModel(IEventAggregator eventAggregator, IView view)
         {
@@ -32,11 +33,20 @@ namespace Interop.Modules.Obstacles.ViewModels
             }
 
             _eventAggregator = eventAggregator;
-            
-            _map = (view as Views.ObstaclesView).Map;
+            _view = (view as Views.ObstaclesView);
+            _map = _view.Map;
                         
             _eventAggregator.GetEvent<UpdateObstaclesEvent>().Subscribe(Update_Obstacles);
             //TODO: Suscribe to Telemetry event to get the drono on the map
+        }
+
+        public double scaleDimension(double latitude, double zoomLevel, double mapDimension)
+        {
+            var DPI   = 1.0;
+            var res   = 156543.03 * Math.Cos(latitude) / Math.Pow(2.0, zoomLevel);
+            var scale = 1 / (DPI * 39.37 * res);
+
+            return scale * mapDimension;
         }
 
         public void Update_Obstacles(Infrastructure.Models.Obstacles obstacles)
@@ -44,7 +54,7 @@ namespace Interop.Modules.Obstacles.ViewModels
             //TODO: Update each obstacles with their radius on the map
             SetObstacles(obstacles);
 
-            //TODO: Remove the following line when the deebug will be finish
+            //TODO: Remove the following line when the debug will be finish
             this.Position = new Point(obstacles.moving_obstacles[0].latitude, obstacles.moving_obstacles[0].longitude);
         }
 
@@ -60,10 +70,15 @@ namespace Interop.Modules.Obstacles.ViewModels
                 foreach (var obstacle in obstacles.stationary_obstacles)
                 {
                     var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
-                    var shape = new System.Windows.Shapes.Ellipse();
-                    shape.Height = obstacle.cylinder_radius;
-                    shape.Width = obstacle.cylinder_radius;
-                    shape.Fill = System.Windows.Media.Brushes.Green;
+                    var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.cylinder_radius * 12.0);
+
+                    var shape = new System.Windows.Shapes.Ellipse();                    
+                    shape.Height = res * 2;
+                    shape.Width = res * 2;
+                    shape.Fill = System.Windows.Media.Brushes.Cyan;
+                    shape.Opacity = 10;
+
+                    marker.Offset = new Point(-res, -res);
                     marker.Shape = shape;              
                      _map.Markers.Add(marker);
                 }
@@ -72,10 +87,15 @@ namespace Interop.Modules.Obstacles.ViewModels
                 foreach (var obstacle in obstacles.moving_obstacles)
                 {
                     var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
-                    var shape = new System.Windows.Shapes.Ellipse();
-                    shape.Height = obstacle.sphere_radius;
-                    shape.Width = obstacle.sphere_radius;
+                    var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.sphere_radius * 12.0);
+
+                    var shape = new System.Windows.Shapes.Ellipse();                    
+                    shape.Height = res * 2.0;
+                    shape.Width = res * 2.0;                    
                     shape.Fill = System.Windows.Media.Brushes.Red;
+                    shape.Opacity = 10;
+
+                    marker.Offset = new Point(-res, -res);
                     marker.Shape = shape;
                     _map.Markers.Add(marker);
                 }
@@ -91,7 +111,7 @@ namespace Interop.Modules.Obstacles.ViewModels
         /// <summary>
         /// This is the map provider that the control will use
         /// </summary>
-        GMapProvider _provider = GMapProviders.OpenStreetMap;
+        GMapProvider _provider = GMapProviders.OviHybridMap;
         public GMapProvider Provider
         {
             get

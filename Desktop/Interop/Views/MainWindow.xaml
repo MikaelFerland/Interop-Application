@@ -5,9 +5,9 @@
         prism:ViewModelLocator.AutoWireViewModel="True"
         Title="{Binding Title}"
         WindowStartupLocation="CenterScreen"
-        WindowState="Maximized">
+        WindowState="Maximized" Background="DimGray">
     <DockPanel LastChildFill="True">
-        <StatusBar DockPanel.Dock="Bottom">
+        <StatusBar DockPanel.Dock="Bottom" Background="DimGray">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid>

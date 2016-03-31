@@ -10,6 +10,6 @@
              >
     
     <Grid>
-        <Label HorizontalAlignment="Stretch" VerticalAlignment="Center" Foreground="Black" FontSize="12" Content="{Binding ServerStatus}"/>
+        <Label HorizontalAlignment="Stretch" VerticalAlignment="Center" Foreground="Lime" FontSize="12" Content="{Binding ServerStatus}"/>
     </Grid>
 </UserControl>
