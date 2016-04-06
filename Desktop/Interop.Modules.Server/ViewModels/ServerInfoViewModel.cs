@@ -1,10 +1,10 @@
-﻿using Prism.Events;
-using Prism.Mvvm;
-using System;
-
-using Interop.Infrastructure.Events;
+﻿using Interop.Infrastructure.Events;
 using Interop.Infrastructure.Interfaces;
 using Interop.Infrastructure.Models;
+
+using Prism.Events;
+using Prism.Mvvm;
+using System;
 
 namespace Interop.Modules.Server.ViewModels
 {

@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Newtonsoft.Json;
-using Prism.Events;
-
-using Interop.Infrastructure.Events;
+﻿using Interop.Infrastructure.Events;
 using Interop.Infrastructure.Interfaces;
 using Interop.Infrastructure.Models;
 using Interop.Modules.Client.Requests;
+
+using Newtonsoft.Json;
+using Prism.Events;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Interop.Modules.Client.Services
 {

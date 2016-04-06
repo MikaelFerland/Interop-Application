@@ -1,8 +1,8 @@
-﻿using Prism.Events;
+﻿using Interop.Infrastructure.Events;
+
+using Prism.Events;
 using Prism.Mvvm;
 using System;
-
-using Interop.Infrastructure.Events;
 
 namespace Interop.Modules.Login.ViewModels
 {

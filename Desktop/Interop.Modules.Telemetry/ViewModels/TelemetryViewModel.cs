@@ -1,14 +1,13 @@
-﻿using Prism.Commands;
+﻿using Interop.Infrastructure.Events;
+using Interop.Infrastructure.Interfaces;
+using Interop.Infrastructure.Models;
+
+using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using Prism.Events;
-
-using Interop.Infrastructure.Events;
-using Interop.Infrastructure.Interfaces;
-using Interop.Infrastructure.Models;
 
 namespace Interop.Modules.Telemetry.ViewModels
 {

@@ -1,11 +1,10 @@
-﻿using Prism.Commands;
+﻿using Interop.Infrastructure.Events;
+using Interop.Infrastructure.Models;
+
 using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
-
-using Interop.Infrastructure.Events;
-using Interop.Infrastructure.Models;
 using System.Collections.ObjectModel;
 
 namespace Interop.Modules.Targets.ViewModels

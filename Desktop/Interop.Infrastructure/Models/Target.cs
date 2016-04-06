@@ -1,6 +1,4 @@
-﻿
-
-namespace Interop.Infrastructure.Models
+﻿namespace Interop.Infrastructure.Models
 {
     public class Target
     {

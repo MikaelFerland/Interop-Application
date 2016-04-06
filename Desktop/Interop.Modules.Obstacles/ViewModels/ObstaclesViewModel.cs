@@ -1,15 +1,13 @@
-﻿using Prism.Events;
-using Prism.Mvvm;
-using Prism.Regions;
-using System;
-
-using GMap.NET;
+﻿using GMap.NET;
 using GMap.NET.MapProviders;
 using GMap.NET.WindowsPresentation;
 
 using Interop.Infrastructure.Events;
 using Interop.Infrastructure.Interfaces;
 
+using Prism.Events;
+using Prism.Mvvm;
+using System;
 using System.Windows;
 
 namespace Interop.Modules.Obstacles.ViewModels

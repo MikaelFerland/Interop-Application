@@ -5,14 +5,10 @@ using Interop.Infrastructure.Models;
 using Newtonsoft.Json;
 using Prism.Events;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Interop.Modules.Client.Services
 {
@@ -22,12 +18,6 @@ namespace Interop.Modules.Client.Services
         IEventAggregator _eventAggregator;
 
         DroneTelemetry _droneTelemetry = new DroneTelemetry();
-
-        //GpsRawInt _gpsRawInt;
-        //Attitude _attitude;
-        //GlobalPositionInt _globalPositionInt;
-        //HighresIMU _highresIMU;
-        //Altitude _altitude;
         
         public TelemetryService(IEventAggregator eventAggregator)
         {
