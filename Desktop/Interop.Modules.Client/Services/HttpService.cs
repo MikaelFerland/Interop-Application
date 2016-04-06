@@ -23,6 +23,7 @@ namespace Interop.Modules.Client.Services
     {
         const string USER = "simpleuser";
         const string PASS = "simplepass";
+        const string HOST = "http://mikaelferland.com:80/";
 
         static object[] REQUESTS = { new GetServerInfo(), new GetTargets(), new GetObstacles()};
         BackgroundWorker bw = new BackgroundWorker();
@@ -53,7 +54,7 @@ namespace Interop.Modules.Client.Services
         {
             //TODO: Latency monitoring, handle timeout if server is down.
             while(!(sender as BackgroundWorker).CancellationPending)
-            { 
+            {
                 Task<ServerInfo> serverInfoTask = Task.Run(() => RunAsync<ServerInfo>((IRequest)REQUESTS[0]).Result);
                 Task<List<Target>> targetsTask = Task.Run(() => RunAsync<List<Target>>((IRequest)REQUESTS[1]).Result);
                 Task<Obstacles> obstaclesTask = Task.Run(() => RunAsync<Obstacles>((IRequest)REQUESTS[2]).Result);
@@ -80,7 +81,7 @@ namespace Interop.Modules.Client.Services
             using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
             using (var client = new HttpClient(handler))
             {
-                client.BaseAddress = new Uri("http://mikaelferland.com:80/");
+                client.BaseAddress = new Uri(HOST);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 
@@ -98,7 +99,7 @@ namespace Interop.Modules.Client.Services
 
         public bool Login()
         {
-            var baseAddress = new Uri("http://mikaelferland.com:80/");
+            var baseAddress = new Uri(HOST);
 
             _cookieContainer = new CookieContainer();
 
@@ -108,8 +109,8 @@ namespace Interop.Modules.Client.Services
             {
                 var content = new FormUrlEncodedContent(new[]
                 {
-                    new KeyValuePair<string, string>("username", "simpleuser"),
-                    new KeyValuePair<string, string>("password", "simplepass"),
+                    new KeyValuePair<string, string>("username", USER),
+                    new KeyValuePair<string, string>("password", PASS),
                 });
                 _cookieContainer.Add(baseAddress, new Cookie("CookieName", "cookie_value"));
                 var result = client.PostAsync("/api/login", content).Result;

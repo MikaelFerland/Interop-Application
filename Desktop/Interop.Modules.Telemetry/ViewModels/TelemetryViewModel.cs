@@ -4,15 +4,42 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Prism.Events;
+
+using Interop.Infrastructure.Events;
+using Interop.Infrastructure.Interfaces;
+using Interop.Infrastructure.Models;
+
 namespace Interop.Modules.Telemetry.ViewModels
 {
 	public class TelemetryViewModel : BindableBase
 	{
-        public TelemetryViewModel()
+        IEventAggregator _eventAggregator;
+
+        public TelemetryViewModel(IEventAggregator eventAggregator, ITelemetryService telemetryService)
         {
+            if (eventAggregator == null)
+            {
+                throw new ArgumentNullException("eventAggregator");
+            }
+
+            if (telemetryService == null)
+            {
+                throw new ArgumentNullException("telemetryService");
+            }
+
+            _eventAggregator = eventAggregator;
+
+            _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(Update_Telemetry);
+
             Title = "Telemetry Region";
         }
 
         public string Title { get; set; }
+
+        public void Update_Telemetry(Infrastructure.Models.DroneTelemetry droneTelemetry)
+        {
+
+        }
     }
 }

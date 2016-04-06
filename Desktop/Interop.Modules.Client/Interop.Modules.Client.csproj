@@ -101,6 +101,7 @@
     <Compile Include="Requests\GetStaticObstacles.cs" />
     <Compile Include="Requests\GetTargets.cs" />
     <Compile Include="Services\HttpService.cs" />
+    <Compile Include="Services\TelemetryService.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
