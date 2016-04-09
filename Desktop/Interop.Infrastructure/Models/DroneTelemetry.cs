@@ -9,6 +9,64 @@ namespace Interop.Infrastructure.Models
         public GlobalPositionInt GlobalPositionInt { get; set; }
         public HighresIMU HighresIMU { get; set; }
         public Altitude   Altitude { get; set; }
+        public VfrHUD VfrHUD { get; set; }
+
+        public float Latitutde
+        {
+            get
+            {
+                int lat = this.GlobalPositionInt.lat;
+                double corrLat = (double)lat * 1e-7;
+                
+                return (float)corrLat;
+            }
+        }
+
+        public float Longitude
+        {
+            get
+            {
+                int lon = this.GlobalPositionInt.lon;
+                double corrLon = (double)lon * 1e-7;
+
+                return (float)corrLon;
+            }
+        }
+
+        public float AltitudeMSL
+        {
+            get
+            {
+                double alt_metric_mm = this.GlobalPositionInt.alt;
+                double alt_imperial_feet = alt_metric_mm * 0.00328084;
+
+                return (float)alt_imperial_feet;
+            }
+        }
+
+        public float Heading
+        {
+            get
+            {
+                return this.VfrHUD.heading;
+            }
+        }
+    }
+        
+    [Description("Packet id = 24")]
+    public class GpsRawInt
+    {
+        public int packet_id { get; set; }
+        public ulong time_usec { get; set; }
+        public byte fix_type { get; set; }
+        public int lat { get; set; }
+        public int lon { get; set; }
+        public int alt { get; set; }
+        public ushort eph { get; set; }
+        public ushort epv { get; set; }
+        public ushort vel { get; set; }
+        public ushort cog { get; set; }
+        public byte satellites_visible { get; set; }
     }
 
     [Description("Packet id = 30")]
@@ -16,12 +74,38 @@ namespace Interop.Infrastructure.Models
     {
         public uint packet_id { get; set; }
         public float time_boot_ms { get; set; }
-        public float roll { get; set; }  
+        public float roll { get; set; }
         public float pitch { get; set; }
         public float yaw { get; set; }
         public float rollspeed { get; set; }
         public float pitchspeed { get; set; }
         public float yawspeed { get; set; }
+    }
+
+    [Description("Packet id = 33")]
+    public class GlobalPositionInt
+    {
+        public int packet_id { get; set; }
+        public uint time_boot_ms { get; set; }
+        public int lat { get; set; }
+        public int lon { get; set; }
+        public int alt { get; set; }
+        public int relative_alt { get; set; }
+        public short vx { get; set; }
+        public short vy { get; set; }
+        public short vz { get; set; }
+        public ushort hdg { get; set; }
+    }
+
+    [Description("Packet id = 74")]
+    public class VfrHUD
+    {
+        public float airspeed { get; set; }
+        public float groundspeed { get; set; }
+        public short heading { get; set; }
+        public ushort throttle { get; set; }
+        public float alt { get; set; }
+        public float climb { get; set; }
     }
 
     [Description("Packet id = 141")]
@@ -56,36 +140,5 @@ namespace Interop.Infrastructure.Models
         public float pressure_alt { get; set; }
         public float temperature { get; set; }
         public ushort temperafields_updated { get; set; }
-    }
-
-    [Description("Packet id = 24")]
-    public class GpsRawInt
-    {
-        public int packet_id { get; set; }
-        public ulong time_usec { get; set; }
-        public byte fix_type { get; set; }
-        public int lat { get; set; }
-        public int lon { get; set; }
-        public int alt { get; set; }
-        public ushort eph { get; set; }
-        public ushort epv { get; set; }
-        public ushort vel { get; set; }
-        public ushort cog { get; set; }
-        public byte satellites_visible { get; set; }
-    }
-
-    [Description("Packet id = 33")]
-    public class GlobalPositionInt
-    {
-        public int packet_id { get; set; }
-        public uint time_boot_ms { get; set; }
-        public int lat { get; set; }
-        public int lon { get; set; }
-        public int alt { get; set; }
-        public int relative_alt { get; set; }
-        public short vx { get; set; }
-        public short vy { get; set; }
-        public short vz { get; set; }
-        public ushort hdg { get; set; }
     }
 }

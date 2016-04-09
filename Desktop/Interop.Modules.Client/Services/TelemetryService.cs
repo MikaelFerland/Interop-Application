@@ -14,7 +14,8 @@ namespace Interop.Modules.Client.Services
 {
     public class TelemetryService : ITelemetryService
     {
-        BackgroundWorker bw = new BackgroundWorker();
+        BackgroundWorker _bw = new BackgroundWorker();
+        UdpClient        _udpClient;
         IEventAggregator _eventAggregator;
 
         DroneTelemetry _droneTelemetry = new DroneTelemetry();
@@ -28,45 +29,53 @@ namespace Interop.Modules.Client.Services
             _eventAggregator = eventAggregator;
             _droneTelemetry = new DroneTelemetry();
 
-            bw.WorkerSupportsCancellation = true;
-            bw.WorkerReportsProgress = true;
+            _bw.WorkerSupportsCancellation = true;
+            _bw.WorkerReportsProgress = true;
 
-            bw.DoWork += Bw_DoWork;
-            bw.RunWorkerAsync();
+            _bw.DoWork += Bw_DoWork;
+            _bw.RunWorkerAsync();
         }
 
         private void Bw_DoWork(object sender, DoWorkEventArgs e)
         {
             while (!(sender as BackgroundWorker).CancellationPending)
             {
-                UdpClient udpClient = new UdpClient();
+                if (_udpClient == null)
+                {
+                    _udpClient = new UdpClient();
+                }
+                 
                 try
                 {
                     IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 5005);
 
-                    udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                    udpClient.Client.Bind(RemoteIpEndPoint);
+                    if (_udpClient.Client.IsBound == false)
+                    {
+                        _udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                        _udpClient.Client.Bind(RemoteIpEndPoint);
+                    }
 
                     // Blocks until a message returns on this socket from a remote host.
-                    Byte[] receiveBytes = udpClient.Receive(ref RemoteIpEndPoint);
+                    Byte[] receiveBytes = _udpClient.Receive(ref RemoteIpEndPoint);
                     string mavlinkData = Encoding.ASCII.GetString(receiveBytes);
 
                     int mavlinkId = FindMavlinkId(mavlinkData);
                     RaiseMavlinkEvent(mavlinkId, mavlinkData);
 
-                    // Uses the IPEndPoint object to determine which of these two hosts responded.
-                    //Console.WriteLine("This is the message you received " +
-                    //                             mavlinkData.ToString());
-                    //Console.WriteLine("This message was sent from " +
-                    //                            RemoteIpEndPoint.Address.ToString() +
-                    //                            " on their port number " +
-                    //                            RemoteIpEndPoint.Port.ToString());
+                        // Uses the IPEndPoint object to determine which of these two hosts responded.
+                        //Console.WriteLine("This is the message you received " +
+                        //                             mavlinkData.ToString());
+                        //Console.WriteLine("This message was sent from " +
+                        //                            RemoteIpEndPoint.Address.ToString() +
+                        //                            " on their port number " +
+                        //                            RemoteIpEndPoint.Port.ToString());                    
 
-                    udpClient.Close();
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
+                    _udpClient.Close();
+                    _udpClient = null;
                 }
 
             }
@@ -74,31 +83,42 @@ namespace Interop.Modules.Client.Services
 
         private void RaiseMavlinkEvent(int id, string mavlinkData)
         {
-            switch (id)
-            {
-                case 24: // GPS_RAW_INT
-                    _droneTelemetry.GpsRawInt = JsonConvert.DeserializeObject<GpsRawInt>(mavlinkData);
-                    break;
-                case 30: // ATTITUDE
-                    _droneTelemetry.Attitude = JsonConvert.DeserializeObject<Attitude>(mavlinkData);
-                    break;
-                case 33: // GLOBAL_POSITION_INT
-                    _droneTelemetry.GlobalPositionInt = JsonConvert.DeserializeObject<GlobalPositionInt>(mavlinkData);
-                    break;
+            try
+            {            
+                switch (id)
+                {
+                    case 24: // GPS_RAW_INT
+                        _droneTelemetry.GpsRawInt = JsonConvert.DeserializeObject<GpsRawInt>(mavlinkData);
+                        break;
+                    case 30: // ATTITUDE
+                        _droneTelemetry.Attitude = JsonConvert.DeserializeObject<Attitude>(mavlinkData);
+                        break;
+                    case 33: // GLOBAL_POSITION_INT
+                        _droneTelemetry.GlobalPositionInt = JsonConvert.DeserializeObject<GlobalPositionInt>(mavlinkData);
+                        break;
 
-                case 105: // HIGHRES_IMU
-                    _droneTelemetry.HighresIMU = JsonConvert.DeserializeObject<HighresIMU>(mavlinkData);
-                    break;
+                    case 74: // VFR_HUD
+                        _droneTelemetry.VfrHUD = JsonConvert.DeserializeObject<VfrHUD>(mavlinkData);
+                        break;
 
-                case 141: // ALTITUDE
-                    _droneTelemetry.Altitude = JsonConvert.DeserializeObject<Altitude>(mavlinkData);
-                    break;
+                    case 105: // HIGHRES_IMU
+                        _droneTelemetry.HighresIMU = JsonConvert.DeserializeObject<HighresIMU>(mavlinkData);
+                        break;
 
-                default : // NOT YET SUPPORTED
-                    return;                    
+                    case 141: // ALTITUDE
+                        _droneTelemetry.Altitude = JsonConvert.DeserializeObject<Altitude>(mavlinkData);
+                        break;
+
+                    default : // NOT YET SUPPORTED
+                        return;                    
+                }
+
+                _eventAggregator.GetEvent<UpdateTelemetry>().Publish(_droneTelemetry);
             }
-
-            _eventAggregator.GetEvent<UpdateTelemetry>().Publish(_droneTelemetry);
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         private int FindMavlinkId(string mavlinkStr)

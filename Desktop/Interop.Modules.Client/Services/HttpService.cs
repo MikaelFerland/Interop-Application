@@ -44,6 +44,8 @@ namespace Interop.Modules.Client.Services
                 bw.DoWork += Bw_DoWork;
                 bw.RunWorkerAsync();
                 _eventAggregator.GetEvent<UpdateLoginStatusEvent>().Publish(string.Format("Connected as {0}", USER));
+
+                _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(TryPostDroneTelemetry);
             }
         }
 
@@ -111,6 +113,40 @@ namespace Interop.Modules.Client.Services
                 });
                 _cookieContainer.Add(baseAddress, new Cookie("CookieName", "cookie_value"));
                 var result = client.PostAsync("/api/login", content).Result;
+                result.EnsureSuccessStatusCode();
+                return result.IsSuccessStatusCode;
+            }
+        }
+
+        public void TryPostDroneTelemetry(DroneTelemetry droneTelemetry)
+        {
+            bool isPosted = false;
+
+            if(this._cookieContainer != null && droneTelemetry.GlobalPositionInt !=null)
+            { 
+                isPosted = PostDroneTelemetry(droneTelemetry);
+            }
+            Console.WriteLine(isPosted.ToString());                        
+        }
+
+
+        public bool PostDroneTelemetry(DroneTelemetry droneTelemetry)
+        {
+            using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
+
+            using (var client = new HttpClient(handler))
+            {
+                client.BaseAddress = new Uri(HOST);
+
+                var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("latitude", droneTelemetry.Latitutde.ToString()),
+                    new KeyValuePair<string, string>("longitude", droneTelemetry.Longitude.ToString()),
+                    new KeyValuePair<string, string>("altitude_msl", droneTelemetry.AltitudeMSL.ToString()),
+                    new KeyValuePair<string, string>("uas_heading", droneTelemetry.AltitudeMSL.ToString()),
+                });
+
+                var result = client.PostAsync("/api/telemetry", content).Result;
                 result.EnsureSuccessStatusCode();
                 return result.IsSuccessStatusCode;
             }

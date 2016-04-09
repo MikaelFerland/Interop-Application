@@ -35,7 +35,7 @@ namespace Interop.Modules.Obstacles.ViewModels
             _map = _view.Map;
                         
             _eventAggregator.GetEvent<UpdateObstaclesEvent>().Subscribe(Update_Obstacles);
-            //TODO: Suscribe to Telemetry event to get the drono on the map
+            _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(Update_DronePosition);
         }
 
         public double scaleDimension(double latitude, double zoomLevel, double mapDimension)
@@ -53,57 +53,62 @@ namespace Interop.Modules.Obstacles.ViewModels
             SetObstacles(obstacles);
 
             //TODO: Remove the following line when the debug will be finish
-            this.Position = new Point(obstacles.moving_obstacles[0].latitude, obstacles.moving_obstacles[0].longitude);
+            //this.Position = new Point(obstacles.moving_obstacles[0].latitude, obstacles.moving_obstacles[0].longitude);
         }
 
         public void SetObstacles(Infrastructure.Models.Obstacles obstacles)
         {
-            // We are able to modify the markers collection only if we are on the same thread
-            // http://stackoverflow.com/questions/18331723/this-type-of-collectionview-does-not-support-changes-to-its-sourcecollection-fro
-            Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
-            {
-                _map.Markers.Clear();
-
-                //Update static obstacles
-                foreach (var obstacle in obstacles.stationary_obstacles)
+            if (obstacles != null)
+            { 
+                // We are able to modify the markers collection only if we are on the same thread
+                // http://stackoverflow.com/questions/18331723/this-type-of-collectionview-does-not-support-changes-to-its-sourcecollection-fro
+                Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
                 {
-                    var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
-                    var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.cylinder_radius * 12.0);
+                    _map.Markers.Clear();
 
-                    var shape = new System.Windows.Shapes.Ellipse();                    
-                    shape.Height = res * 2;
-                    shape.Width = res * 2;
-                    shape.Fill = System.Windows.Media.Brushes.Cyan;
-                    shape.Opacity = 10;
+                    //Update static obstacles
+                    foreach (var obstacle in obstacles.stationary_obstacles)
+                    {
+                        var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
+                        var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.cylinder_radius * 12.0);
 
-                    marker.Offset = new Point(-res, -res);
-                    marker.Shape = shape;              
-                     _map.Markers.Add(marker);
-                }
+                        var shape = new System.Windows.Shapes.Ellipse();                    
+                        shape.Height = res * 2;
+                        shape.Width = res * 2;
+                        shape.Fill = System.Windows.Media.Brushes.Cyan;
+                        shape.Opacity = 10;
 
-                //Update the moving obstacles
-                foreach (var obstacle in obstacles.moving_obstacles)
-                {
-                    var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
-                    var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.sphere_radius * 12.0);
+                        marker.Offset = new Point(-res, -res);
+                        marker.Shape = shape;              
+                         _map.Markers.Add(marker);
+                    }
 
-                    var shape = new System.Windows.Shapes.Ellipse();                    
-                    shape.Height = res * 2.0;
-                    shape.Width = res * 2.0;                    
-                    shape.Fill = System.Windows.Media.Brushes.Red;
-                    shape.Opacity = 10;
+                    //Update the moving obstacles
+                    foreach (var obstacle in obstacles.moving_obstacles)
+                    {
+                        var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
+                        var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.sphere_radius * 12.0);
 
-                    marker.Offset = new Point(-res, -res);
-                    marker.Shape = shape;
-                    _map.Markers.Add(marker);
-                }
-            });
+                        var shape = new System.Windows.Shapes.Ellipse();                    
+                        shape.Height = res * 2.0;
+                        shape.Width = res * 2.0;                    
+                        shape.Fill = System.Windows.Media.Brushes.Red;
+                        shape.Opacity = 10;
+
+                        marker.Offset = new Point(-res, -res);
+                        marker.Shape = shape;
+                        _map.Markers.Add(marker);
+                    }
+                });
+            }
         }
 
-        public void Update_DronePosition()
-        {            
-            //TODO: Update the map center with drone position when the telemetry module will be done
-            //this.Position = new Point(drone.latitude, drone.longitude);
+        public void Update_DronePosition(Infrastructure.Models.DroneTelemetry droneTelemetry)
+        {   
+            if (droneTelemetry.GlobalPositionInt != null)
+            { 
+                this.Position = new Point(droneTelemetry.Latitutde, droneTelemetry.Longitude);
+            }
         }
 
         /// <summary>

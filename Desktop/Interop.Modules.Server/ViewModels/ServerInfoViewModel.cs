@@ -25,7 +25,10 @@ namespace Interop.Modules.Server.ViewModels
 
         public void Update_ServerInfo(ServerInfo serverInfo)
         {
-            this.ServerStatus = String.Format("{0} - {1}", serverInfo.server_time, serverInfo.message);
+            if (serverInfo != null)
+            {
+                this.ServerStatus = String.Format("{0} - {1}", serverInfo.server_time, serverInfo.message);
+            }            
         }
 
         string _serverStatus = string.Empty;
