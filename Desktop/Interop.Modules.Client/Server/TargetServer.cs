@@ -26,11 +26,14 @@ namespace Interop.Modules.Client.Server
         //    _eventAggregator = eventAggregator;
         //}
 
-        public void SendTarget(InteropTargetMessage tInfo)
+        public Response SendTarget(InteropTargetMessage tInfo)
         {
             //throw new NotImplementedException();
-            Console.WriteLine("Good");
-        }
+            var response = new Response();
+            response.Message = "SUCCESS";
+            Services.TargetService.CallbackTargetMessage(tInfo);
 
+            return response;            
+        }
     }
 }

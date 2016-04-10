@@ -12,7 +12,20 @@ namespace Interop.Infrastructure.Interfaces
     public interface ITargetServer
     {
         [OperationContract]
-        void SendTarget(InteropTargetMessage tInfo);
+        Response SendTarget(InteropTargetMessage tInfo);
+    }
+
+    [MessageContract]
+    public class Response
+    {
+        private string _message;
+
+        [MessageHeader]
+        public string Message
+        {
+            get { return _message; }
+            set { _message = value; }
+        }
     }
 
     [MessageContract]
