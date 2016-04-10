@@ -59,47 +59,54 @@ namespace Interop.Modules.Obstacles.ViewModels
         public void SetObstacles(Infrastructure.Models.Obstacles obstacles)
         {
             if (obstacles != null)
-            { 
-                // We are able to modify the markers collection only if we are on the same thread
-                // http://stackoverflow.com/questions/18331723/this-type-of-collectionview-does-not-support-changes-to-its-sourcecollection-fro
-                Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+            {
+                try
                 {
-                    _map.Markers.Clear();
-
-                    //Update static obstacles
-                    foreach (var obstacle in obstacles.stationary_obstacles)
+                    // We are able to modify the markers collection only if we are on the same thread
+                    // http://stackoverflow.com/questions/18331723/this-type-of-collectionview-does-not-support-changes-to-its-sourcecollection-fro
+                    Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
                     {
-                        var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
-                        var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.cylinder_radius * 12.0);
+                        _map.Markers.Clear();
 
-                        var shape = new System.Windows.Shapes.Ellipse();                    
-                        shape.Height = res * 2;
-                        shape.Width = res * 2;
-                        shape.Fill = System.Windows.Media.Brushes.Cyan;
-                        shape.Opacity = 10;
+                        //Update static obstacles
+                        foreach (var obstacle in obstacles.stationary_obstacles)
+                        {
+                            var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
+                            var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.cylinder_radius * 12.0);
 
-                        marker.Offset = new Point(-res, -res);
-                        marker.Shape = shape;              
-                         _map.Markers.Add(marker);
-                    }
+                            var shape = new System.Windows.Shapes.Ellipse();
+                            shape.Height = res * 2;
+                            shape.Width = res * 2;
+                            shape.Fill = System.Windows.Media.Brushes.Cyan;
+                            shape.Opacity = 10;
 
-                    //Update the moving obstacles
-                    foreach (var obstacle in obstacles.moving_obstacles)
-                    {
-                        var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
-                        var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.sphere_radius * 12.0);
+                            marker.Offset = new Point(-res, -res);
+                            marker.Shape = shape;
+                            _map.Markers.Add(marker);
+                        }
 
-                        var shape = new System.Windows.Shapes.Ellipse();                    
-                        shape.Height = res * 2.0;
-                        shape.Width = res * 2.0;                    
-                        shape.Fill = System.Windows.Media.Brushes.Red;
-                        shape.Opacity = 10;
+                        //Update the moving obstacles
+                        foreach (var obstacle in obstacles.moving_obstacles)
+                        {
+                            var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
+                            var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.sphere_radius * 12.0);
 
-                        marker.Offset = new Point(-res, -res);
-                        marker.Shape = shape;
-                        _map.Markers.Add(marker);
-                    }
-                });
+                            var shape = new System.Windows.Shapes.Ellipse();
+                            shape.Height = res * 2.0;
+                            shape.Width = res * 2.0;
+                            shape.Fill = System.Windows.Media.Brushes.Red;
+                            shape.Opacity = 10;
+
+                            marker.Offset = new Point(-res, -res);
+                            marker.Shape = shape;
+                            _map.Markers.Add(marker);
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
 

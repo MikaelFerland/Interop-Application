@@ -66,9 +66,9 @@ namespace Interop.Modules.Client.Services
                 _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(targetsTask.Result);
                 _eventAggregator.GetEvent<UpdateObstaclesEvent>().Publish(obstaclesTask.Result);
 
-                Console.WriteLine(serverInfoTask.Result.server_time);
-                Console.WriteLine(targetsTask.Result);
-                Console.WriteLine(obstaclesTask.Result);
+                //Console.WriteLine(serverInfoTask.Result.server_time);
+                //Console.WriteLine(targetsTask.Result);
+                //Console.WriteLine(obstaclesTask.Result);
 
                 // You can decrease the value to get faster refresh
                 Thread.Sleep(500);

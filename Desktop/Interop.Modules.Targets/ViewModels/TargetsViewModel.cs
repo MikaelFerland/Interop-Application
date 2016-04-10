@@ -1,4 +1,5 @@
 ﻿using Interop.Infrastructure.Events;
+using Interop.Infrastructure.Interfaces;
 using Interop.Infrastructure.Models;
 
 using Prism.Events;
@@ -12,15 +13,21 @@ namespace Interop.Modules.Targets.ViewModels
     public class TargetsViewModel : BindableBase
     {
         IEventAggregator _eventAggregator;
+        ITargetService _targetService;
 
-        public TargetsViewModel(IEventAggregator eventAggregator)
+        public TargetsViewModel(IEventAggregator eventAggregator, ITargetService targetService)
         {
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
             }
+
+            if (targetService == null)
+            {
+                throw new ArgumentNullException("targetService");
+            }
             _eventAggregator = eventAggregator;
-             
+            _targetService = targetService;
 
             _eventAggregator.GetEvent<UpdateTargetsEvent>().Subscribe(Update_Targets);
         }

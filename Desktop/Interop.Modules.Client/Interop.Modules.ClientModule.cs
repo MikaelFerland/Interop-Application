@@ -22,8 +22,9 @@ namespace Interop.Modules.Client
         public void Initialize()
         {
             //Will be a service
-            _container.RegisterType<IHttpService, Services.HttpService>();
+            _container.RegisterType<IHttpService, Services.HttpService>(new ContainerControlledLifetimeManager());
             _container.RegisterType<ITelemetryService, Services.TelemetryService>( new ContainerControlledLifetimeManager());
+            _container.RegisterType<ITargetService, Services.TargetService>(new ContainerControlledLifetimeManager());
         }
     }
 }
