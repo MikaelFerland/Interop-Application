@@ -6,9 +6,27 @@
              xmlns:local="clr-namespace:Interop.Modules.Telemetry.Views"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
+             xmlns:cus="clr-namespace:Interop.Modules.Telemetry.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Background="Red">
-        <Label HorizontalAlignment="Stretch" VerticalAlignment="Center"  FontSize="20" Content="{Binding Title}"/>
+             d:DesignHeight="30" d:DesignWidth="300">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Label Grid.Column="0" Foreground="Lime" Content="TELEMETRY" VerticalAlignment="Center" />
+        <cus:Led Grid.Column="1" Height="20" Foreground="Lime" HorizontalAlignment="Left" VerticalAlignment="Center" IsActive="{Binding IsDronoOnline}"/>
+        <Label Grid.Column="3" Foreground="Lime" VerticalAlignment="Center" Content="GPS "/>
+        <Label Grid.Column="4" Foreground="Lime" VerticalAlignment="Center" Content="{Binding DronePosition}"/>
+        <Label Grid.Column="5" Foreground="Lime" VerticalAlignment="Center" Content="HDG "/>
+        <Label Grid.Column="6" Foreground="Lime" VerticalAlignment="Center" Content="{Binding DroneHeading}"/>
     </Grid>
 </UserControl>
+    
+    

@@ -57,6 +57,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\Led.xaml.cs">
+      <DependentUpon>Led.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Interop.Modules.TelemetryModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -93,6 +96,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\Led.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\TelemetryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
