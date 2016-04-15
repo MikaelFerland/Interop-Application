@@ -14,17 +14,17 @@ namespace Interop.Modules.Client.Server
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "TargetService" in both code and config file together.
     public class TargetServer : ITargetServer
     {
-        //IEventAggregator _eventAggregator;
-        //
-        //public TargetServer(IEventAggregator eventAggregator)
-        //{
-        //    if (eventAggregator == null)
-        //    {
-        //        throw new ArgumentNullException("eventAggregator");
-        //    }
+        IEventAggregator _eventAggregator;
+        
+        public TargetServer(IEventAggregator eventAggregator)
+        {
+            if (eventAggregator == null)
+            {
+                throw new ArgumentNullException("eventAggregator");
+            }
 
-        //    _eventAggregator = eventAggregator;
-        //}
+            _eventAggregator = eventAggregator;
+        }
 
         public Response SendTarget(InteropTargetMessage tInfo)
         {
