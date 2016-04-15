@@ -4,7 +4,7 @@
 library
 C#
 .cs
-C:\Users\mike1\OneDrive\Documents\Visual Studio 2015\Projects\Interop-Application\Desktop\Interop.Modules.Telemetry\obj\Debug\
+C:\My Projects\DronoLab - Interop-Application\Desktop\Interop.Modules.Telemetry\obj\Debug\
 Interop.Modules.Telemetry
 none
 false
@@ -12,9 +12,9 @@ DEBUG;TRACE
 
 2676956926
 
-11-337295542
-68-1058471828
+112087739500
+68-1936429055
 Controls\Led.xaml;Views\TelemetryView.xaml;
 
-False
+True
 
