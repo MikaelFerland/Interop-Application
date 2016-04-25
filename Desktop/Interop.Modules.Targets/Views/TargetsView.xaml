@@ -10,24 +10,55 @@
              d:DesignHeight="500" d:DesignWidth="300">
 
     <DockPanel LastChildFill="True">
-        <ListView DockPanel.Dock="Top" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Top"  FontSize="35" ItemsSource="{Binding Targets}"/>
+        <ListBox x:Name="lv_targets" DockPanel.Dock="Top" Height="100" BorderBrush="Lime" Background="Black" Foreground="Lime" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" ItemsSource="{Binding Targets}" SelectedItem="{Binding CurrentTarget}" DisplayMemberPath="id" IsSynchronizedWithCurrentItem="True"/>
 
-        <Grid DockPanel.Dock="Bottom">
+          <!--<TreeView Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding ElementName=lv_targets, Path=SelectedItem}"></TreeView>-->
+        <Image Height="180">
+
+        </Image>
+
+        <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="180"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Image Grid.Row="1" Grid.ColumnSpan="3" Height="180"></Image>
-            
-            <Button Grid.Row="2" Grid.Column="0" Margin="5,0,5,0">Open</Button>
-            <Button Grid.Row="2" Grid.Column="1" Margin="5,0,5,0">Update</Button>
-            <Button Grid.Row="2" Grid.Column="2" Margin="5,0,5,0">Download</Button>
+
+            <Label Grid.Row="0" Grid.Column="0" Foreground="Lime">User</Label>
+            <Label Grid.Row="1" Grid.Column="0" Foreground="Lime">Type</Label>
+            <Label Grid.Row="2" Grid.Column="0" Foreground="Lime">Latitude</Label>
+            <Label Grid.Row="3" Grid.Column="0" Foreground="Lime">Longitude</Label>
+            <Label Grid.Row="4" Grid.Column="0" Foreground="Lime">Orientation</Label>
+            <Label Grid.Row="5" Grid.Column="0" Foreground="Lime">Shape</Label>
+            <Label Grid.Row="6" Grid.Column="0" Foreground="Lime">Bg color</Label>
+            <Label Grid.Row="7" Grid.Column="0" Foreground="Lime">Alphanumeric</Label>
+            <Label Grid.Row="8" Grid.Column="0" Foreground="Lime">Alphanumeric_color</Label>
+            <Label Grid.Row="9" Grid.Column="0" Foreground="Lime">Autonomous</Label>
+            <Label Grid.Row="10" Grid.Column="0" Foreground="Lime">Description</Label>
+
+            <TextBox Grid.Row="0"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.user}" />
+            <TextBox Grid.Row="1"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.type}"/>
+            <TextBox Grid.Row="2"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.latitude}"/>
+            <TextBox Grid.Row="3"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.longitude}"/>
+            <TextBox Grid.Row="4"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.orientation}"/>
+            <TextBox Grid.Row="5"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.shape}"/>
+            <TextBox Grid.Row="6"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.background_color}"/>
+            <TextBox Grid.Row="7"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.alphanumeric}"/>
+            <TextBox Grid.Row="8"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.alphanumeric_color}"/>
+            <TextBox Grid.Row="9"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.autonomous}"/>
+            <TextBox Grid.Row="10"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.description}"/>
         </Grid>
     </DockPanel>
 </UserControl>

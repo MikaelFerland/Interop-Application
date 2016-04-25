@@ -1,4 +1,5 @@
-﻿using Interop.Infrastructure.Interfaces;
+﻿using Interop.Infrastructure.Events;
+using Interop.Infrastructure.Interfaces;
 
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,11 @@ namespace Interop.Modules.Client.Server
     public class TargetServer : ITargetServer
     {
         IEventAggregator _eventAggregator;
-        
+
+        public TargetServer()
+        {
+        }
+
         public TargetServer(IEventAggregator eventAggregator)
         {
             if (eventAggregator == null)
@@ -30,9 +35,31 @@ namespace Interop.Modules.Client.Server
         {
             //throw new NotImplementedException();
             var response = new Response();
-            response.Message = "SUCCESS";
-            Services.TargetService.CallbackTargetMessage(tInfo);
+            
+            switch (tInfo.Operation)
+            {
+                case InteropTargetMessage.OperationsTypes.TEST:
+                    {
+                        response.Message = "PING OK";
+                        break;
+                    }
+                case InteropTargetMessage.OperationsTypes.NEW:
+                    {
+                        _eventAggregator.GetEvent<SetTargetIdEvent>().Subscribe(delegate (int id)
+                        {
+                            response.Message = id.ToString();
+                            Console.WriteLine(id.ToString());
+                        });
 
+                        _eventAggregator.GetEvent<PostTargetEvent>().Publish(tInfo);
+
+
+                        break;
+                    }
+                default:
+                    break;
+            }
+            
             return response;            
         }
     }

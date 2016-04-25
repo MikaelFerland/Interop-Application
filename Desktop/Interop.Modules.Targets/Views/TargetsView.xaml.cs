@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using Interop.Modules.Targets.ViewModels;
+
 namespace Interop.Modules.Targets.Views
 {
     /// <summary>

@@ -59,6 +59,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\DeleteTargetEvent.cs" />
+    <Compile Include="Events\PostTargetEvent.cs" />
+    <Compile Include="Events\PutTargetEvent.cs" />
+    <Compile Include="Events\SetTargetIdEvent.cs" />
     <Compile Include="Events\UpdateLoginStatusEvent.cs" />
     <Compile Include="Events\UpdateObstaclesEvent.cs" />
     <Compile Include="Events\UpdateServerInfoEvent.cs" />

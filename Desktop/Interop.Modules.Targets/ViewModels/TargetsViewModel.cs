@@ -4,9 +4,10 @@ using Interop.Infrastructure.Models;
 
 using Prism.Events;
 using Prism.Mvvm;
+
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Interop.Modules.Targets.ViewModels
 {
@@ -14,7 +15,7 @@ namespace Interop.Modules.Targets.ViewModels
     {
         IEventAggregator _eventAggregator;
         ITargetService _targetService;
-
+        
         public TargetsViewModel(IEventAggregator eventAggregator, ITargetService targetService)
         {
             if (eventAggregator == null)
@@ -31,26 +32,108 @@ namespace Interop.Modules.Targets.ViewModels
 
             _eventAggregator.GetEvent<UpdateTargetsEvent>().Subscribe(Update_Targets);
         }
-
+        
         public void Update_Targets(List<Target> targets)
         {
-            this.Targets = new ObservableCollection<Target>(targets);
+            Targets = targets;           
         }
-
-        ObservableCollection<Target> _targets = new ObservableCollection<Target>(new List<Target>());
-        public ObservableCollection<Target> Targets
+        
+        IList<Target> _targets = new List<Target>();
+        public IList<Target> Targets
         {
             get
             {
-                return this._targets;
+                return _targets;
             }
             set
             {
-                if (SetProperty(ref _targets, value))
+                TargetEqualityComparer TargetEqC = new TargetEqualityComparer();
+                if (!ScrambledEquals(Targets.OrderBy(t => t), value.OrderBy(t => t), TargetEqC))
+                //if(!Enumerable.SequenceEqual(_targets.OrderBy(t => t.id), value.OrderBy(t => t.id),TargetEqC))
+                { 
+                    if (SetProperty(ref _targets, value))
+                    {
+                        //this.OnPropertyChanged(() => this.);
+                    }
+                }
+            }
+        }
+
+        public Target _currentTarget = null;
+        public Target CurrentTarget
+        {
+            get
+            {
+                return _currentTarget;
+            }
+            set
+            {
+                if (SetProperty(ref _currentTarget, value))
                 {
                     //this.OnPropertyChanged(() => this.);
                 }
             }
         }
-    }
+
+        public static bool ScrambledEquals<T>(IEnumerable<T> list1, IEnumerable<T> list2, IEqualityComparer<T> comparer)
+        {
+            var cnt = new Dictionary<T, int>(comparer);
+            foreach (T s in list1)
+            {
+                if (cnt.ContainsKey(s))
+                {
+                    cnt[s]++;
+                }
+                else
+                {
+                    cnt.Add(s, 1);
+                }
+            }
+            foreach (T s in list2)
+            {
+                if (cnt.ContainsKey(s))
+                {
+                    cnt[s]--;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return cnt.Values.All(c => c == 0);
+        }
+
+        class TargetEqualityComparer : IEqualityComparer<Target>
+        {
+            public bool Equals(Target b1, Target b2)
+            {
+                if (b2 == null && b1 == null)
+                    return true;
+                else if (b1 == null | b2 == null)
+                    return false;
+                else if (b1.user == b2.user &
+                         b1.type == b2.type &
+                         b1.shape == b2.shape &
+                         b1.orientation == b2.orientation &
+                         b1.longitude == b2.longitude &
+                         b1.latitude == b2.latitude &
+                         b1.id == b2.id &
+                         b1.description == b2.description &
+                         b1.background_color == b2.background_color &
+                         b1.autonomous == b2.autonomous &
+                         b1.alphanumeric == b1.alphanumeric &
+                         b1.alphanumeric_color == b2.alphanumeric_color)
+                    return true;
+                else
+                    return false;
+            }
+
+            public int GetHashCode(Target target)
+            {
+                int hCode = target.id;
+
+                return hCode.GetHashCode();
+            }
+        }
+    }    
 }

@@ -22,7 +22,7 @@ namespace Interop.Modules.Client.Services
         const string PASS = "simplepass";
         const string HOST = "http://mikaelferland.com:80/";
 
-        static object[] REQUESTS = { new GetServerInfo(), new GetTargets(), new GetObstacles()};
+        static object[] REQUESTS = { new GetServerInfo(), new GetTargets(), new GetObstacles() };
         BackgroundWorker bw = new BackgroundWorker();
 
         IEventAggregator _eventAggregator;
@@ -45,14 +45,15 @@ namespace Interop.Modules.Client.Services
                 bw.RunWorkerAsync();
                 _eventAggregator.GetEvent<UpdateLoginStatusEvent>().Publish(string.Format("Connected as {0}", USER));
 
-                _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(TryPostDroneTelemetry);
+                _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(TryPostDroneTelemetry, true);
+                _eventAggregator.GetEvent<PostTargetEvent>().Subscribe(TryPostTarget, true);
             }
         }
 
         private void Bw_DoWork(object sender, DoWorkEventArgs e)
         {
             //TODO: Latency monitoring, handle timeout if server is down.
-            while(!(sender as BackgroundWorker).CancellationPending)
+            while (!(sender as BackgroundWorker).CancellationPending)
             {
                 Task<ServerInfo> serverInfoTask = Task.Run(() => RunAsync<ServerInfo>((IRequest)REQUESTS[0]).Result);
                 Task<List<Target>> targetsTask = Task.Run(() => RunAsync<List<Target>>((IRequest)REQUESTS[1]).Result);
@@ -75,7 +76,7 @@ namespace Interop.Modules.Client.Services
             }
         }
 
-        private async Task<T> RunAsync<T>(IRequest request) where T: class
+        private async Task<T> RunAsync<T>(IRequest request) where T : class
         {
             using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
             using (var client = new HttpClient(handler))
@@ -83,7 +84,7 @@ namespace Interop.Modules.Client.Services
                 client.BaseAddress = new Uri(HOST);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                
+
                 // HTTP GET
                 HttpResponseMessage response = await client.GetAsync(request.Endpoint);
                 if (response.IsSuccessStatusCode)
@@ -122,13 +123,23 @@ namespace Interop.Modules.Client.Services
         {
             bool isPosted = false;
 
-            if(this._cookieContainer != null && droneTelemetry.GlobalPositionInt !=null)
-            { 
+            if (this._cookieContainer != null && droneTelemetry.GlobalPositionInt != null)
+            {
                 isPosted = PostDroneTelemetry(droneTelemetry);
             }
-            Console.WriteLine(isPosted.ToString());                        
+            Console.WriteLine(isPosted.ToString());
         }
 
+        public void TryPostTarget(InteropTargetMessage interopTargetMessage)
+        {
+            bool isPosted = false;
+
+            if (interopTargetMessage != null)
+            {
+                isPosted = PostTarget(interopTargetMessage);
+            }
+            Console.WriteLine(isPosted.ToString());
+        }
 
         public bool PostDroneTelemetry(DroneTelemetry droneTelemetry)
         {
@@ -147,6 +158,96 @@ namespace Interop.Modules.Client.Services
                 });
 
                 var result = client.PostAsync("/api/telemetry", content).Result;
+                result.EnsureSuccessStatusCode();
+                return result.IsSuccessStatusCode;
+            }
+        }
+
+        public bool PostTarget(InteropTargetMessage interopMessage)
+        {
+            using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
+
+            using (var client = new HttpClient(handler))
+            {
+                int id = -1;
+                client.BaseAddress = new Uri(HOST);
+                Target newTarget = new Target();
+                
+                newTarget.type               = interopMessage.TargetType.ToString();
+                newTarget.latitude           = interopMessage.Latitude;
+                newTarget.longitude          = interopMessage.Longitude;
+                newTarget.orientation        = interopMessage.Orientation.ToString();
+                newTarget.shape              = interopMessage.Shape.ToString();
+                newTarget.background_color   = interopMessage.BackgroundColor.ToString();
+                newTarget.alphanumeric_color = interopMessage.ForegroundColor.ToString();
+                newTarget.alphanumeric       = interopMessage.Character.ToString();
+                newTarget.description        = interopMessage.TargetName;
+
+                var result = client.PostAsync("/api/targets", new StringContent(JsonConvert.SerializeObject(newTarget))).Result;
+                Task<string> serverResponse = result.Content.ReadAsStringAsync();
+                Target createdTarget = JsonConvert.DeserializeObject<Target>(serverResponse.Result);
+
+                if (createdTarget != null)
+                {
+                    _eventAggregator.GetEvent<SetTargetIdEvent>().Publish(createdTarget.id);
+                }                
+
+                result.EnsureSuccessStatusCode();
+                return result.IsSuccessStatusCode;
+            }
+        }
+
+        public bool PostImage(InteropTargetMessage interopMessage)
+        {
+            using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
+
+            using (var client = new HttpClient(handler))
+            {
+                client.BaseAddress = new Uri(HOST);
+                var imageBytes = new ByteArrayContent(interopMessage.Image);
+                imageBytes.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+
+                var result = client.PostAsync("/api/targets", imageBytes).Result;
+                
+                result.EnsureSuccessStatusCode();
+                return result.IsSuccessStatusCode;
+            }
+        }
+
+        public bool PutTarget(InteropTargetMessage interopMessage)
+        {
+            using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
+
+            using (var client = new HttpClient(handler))
+            {
+                client.BaseAddress = new Uri(HOST);
+
+                Target newTarget = new Target();
+
+                newTarget.type = interopMessage.TargetType.ToString();
+                newTarget.latitude = interopMessage.Latitude;
+                newTarget.longitude = interopMessage.Longitude;
+                newTarget.orientation = interopMessage.Orientation.ToString();
+                newTarget.shape = interopMessage.Shape.ToString();
+                newTarget.background_color = interopMessage.BackgroundColor.ToString();
+                newTarget.alphanumeric_color = interopMessage.ForegroundColor.ToString();
+                newTarget.alphanumeric = interopMessage.Character.ToString();
+
+                var result = client.PutAsync($"/api/targets/{interopMessage.InteropID}", new StringContent(JsonConvert.SerializeObject(newTarget))).Result;
+                result.EnsureSuccessStatusCode();
+                return result.IsSuccessStatusCode;
+            }
+        }
+
+        public bool DeleteTarget(InteropTargetMessage interopMessage)
+        {
+            using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
+
+            using (var client = new HttpClient(handler))
+            {
+                client.BaseAddress = new Uri(HOST);
+                                
+                var result = client.DeleteAsync($"/api/targets/{interopMessage.InteropID}").Result;
                 result.EnsureSuccessStatusCode();
                 return result.IsSuccessStatusCode;
             }

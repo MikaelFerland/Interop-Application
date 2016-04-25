@@ -29,7 +29,7 @@ namespace Interop.Modules.Telemetry.ViewModels
 
 			_eventAggregator = eventAggregator;
 
-			_eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(Update_Telemetry);
+			_eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(Update_Telemetry, true);
 
 			Title = "Telemetry Region";
 		}
@@ -37,10 +37,19 @@ namespace Interop.Modules.Telemetry.ViewModels
 		public string Title { get; set; }
 
 		public void Update_Telemetry(Infrastructure.Models.DroneTelemetry droneTelemetry)
-		{            
-			DronePosition = $"{droneTelemetry.Latitutde.ToString()}, {droneTelemetry.Longitude.ToString()}";
-            DroneHeading = $"{droneTelemetry.Heading.ToString()}";
-        }
+		{
+			if (droneTelemetry.GlobalPositionInt != null)
+			{
+				DronePosition = $"{droneTelemetry.Latitutde.ToString()}, {droneTelemetry.Longitude.ToString()}";
+			}
+
+			if (droneTelemetry.VfrHUD != null)
+			{
+				DroneHeading = $"{droneTelemetry.Heading.ToString()}";
+			}
+			
+			
+		}
 
 		/// <summary>
 		/// 
@@ -61,23 +70,23 @@ namespace Interop.Modules.Telemetry.ViewModels
 			}
 		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        string _droneHeading = string.Empty;
-        public string DroneHeading
-        {
-            get
-            {
-                return _droneHeading;
-            }
-            set
-            {
-                if (SetProperty(ref _droneHeading, value))
-                {
-                    //this.OnPropertyChanged(() => this.);
-                }
-            }
-        }
-    }
+		/// <summary>
+		/// 
+		/// </summary>
+		string _droneHeading = string.Empty;
+		public string DroneHeading
+		{
+			get
+			{
+				return _droneHeading;
+			}
+			set
+			{
+				if (SetProperty(ref _droneHeading, value))
+				{
+					//this.OnPropertyChanged(() => this.);
+				}
+			}
+		}
+	}
 }

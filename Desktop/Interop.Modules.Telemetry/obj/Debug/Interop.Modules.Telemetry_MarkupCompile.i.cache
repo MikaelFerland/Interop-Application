@@ -16,5 +16,5 @@ DEBUG;TRACE
 68-1058471828
 Controls\Led.xaml;Views\TelemetryView.xaml;
 
-False
+True
 
