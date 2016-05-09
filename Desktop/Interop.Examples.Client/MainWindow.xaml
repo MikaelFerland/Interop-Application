@@ -37,12 +37,12 @@
 
         <Label Grid.Row="0" Grid.Column="0" Height="30" Width="150" Foreground="White" HorizontalAlignment="Left">ID :</Label>
         <TextBox x:Name="tbx_id" Grid.Row="0" Grid.Column="1" Height="30" Width="100"></TextBox>
-        <Label Grid.Row="1" Grid.Column="0" Height="30" Width="150" Foreground="White" HorizontalAlignment="Left">Operation :</Label>
+        <Label Grid.Row="1" Grid.Column="0" Height="30" Width="150" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center">Operation :</Label>
         <ComboBox x:Name="cbx_operation" Grid.Row="1" Grid.Column="1" Height="30" Width="100"></ComboBox>
         <Label Grid.Row="2" Grid.Column="0" Height="30" Width="150" Foreground="White" HorizontalAlignment="Left">Target Name :</Label>
         <TextBox x:Name="tbx_targetName" Grid.Row="2" Grid.Column="1" Height="30" Width="100"></TextBox>
         <Label Grid.Row="3" Grid.Column="0" Height="30" Width="150" Foreground="White" HorizontalAlignment="Left">Image Source Name :</Label>
-        <TextBox Grid.Row="3" x:Name="tbx_ImageSourceName" Grid.Column="1" Height="30" Width="100"></TextBox>
+        <TextBox Grid.Row="3" x:Name="tbx_ImageSourceName" Grid.Column="1" Height="30" Width="100" Text="{Binding ImagePath}" IsEnabled="False"></TextBox>
         <Label Grid.Row="4" Grid.Column="0" Height="30" Width="150" Foreground="White" HorizontalAlignment="Left">Target ID :</Label>
         <TextBox x:Name="tbx_targetId" Grid.Row="4" Grid.Column="1" Height="30" Width="100"></TextBox>
         <Label Grid.Row="6" Grid.Column="0" Height="30" Width="150" Foreground="White" HorizontalAlignment="Left">PosX :</Label>
@@ -66,8 +66,8 @@
         <Label Grid.Row="15" Grid.Column="0" Height="30" Width="150" Foreground="White" HorizontalAlignment="Left">Area :</Label>
         <TextBox x:Name="tbx_area" Grid.Row="15" Grid.Column="1" Height="30" Width="100"></TextBox>
         <Button Grid.Row="16" Grid.Column="0" Height="30" Margin="10" Click="Button_Click">Send</Button>
-        <Label Grid.Row="0" Grid.Column="2" Height="30" Width="150" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top">Image</Label>
-        <Image Grid.Row="1" Grid.Column="2" Grid.RowSpan="16" Height="30" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top"></Image>
-
+        <Label Grid.Row="0" Grid.Column="2" Height="30" Width="150" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top">Image :</Label>
+        <Image Grid.Row="1" Grid.Column="2" Grid.RowSpan="15" Height="300" Width="300" HorizontalAlignment="Left" VerticalAlignment="Top" Source="{Binding DisplayedImage}"></Image>
+        <Button Grid.Row="16" Grid.Column="2" Height="30" Margin="10" Click="btnLoadImage_Click">Load Image</Button>
     </Grid>
 </Window>

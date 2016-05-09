@@ -7,7 +7,7 @@
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="300">
+             d:DesignHeight="700" d:DesignWidth="300">
 
     <DockPanel LastChildFill="True">
         <ListBox x:Name="lv_targets" DockPanel.Dock="Top" Height="100" BorderBrush="Lime" Background="Black" Foreground="Lime" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" ItemsSource="{Binding Targets}" SelectedItem="{Binding CurrentTarget}" DisplayMemberPath="id" IsSynchronizedWithCurrentItem="True"/>
@@ -19,6 +19,7 @@
 
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -59,6 +60,7 @@
             <TextBox Grid.Row="8"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.alphanumeric_color}"/>
             <TextBox Grid.Row="9"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.autonomous}"/>
             <TextBox Grid.Row="10"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.description}"/>
+            <Image   Grid.Row="11"  Grid.ColumnSpan="2" Height="Auto" Width="Auto" Margin="10"  HorizontalAlignment="Left" VerticalAlignment="Top" Source="{Binding DisplayedImage}"/>
         </Grid>
     </DockPanel>
 </UserControl>

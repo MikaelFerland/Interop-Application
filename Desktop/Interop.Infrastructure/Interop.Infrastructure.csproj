@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Events\DeleteTargetEvent.cs" />
+    <Compile Include="Events\TargetImagesEvent.cs" />
     <Compile Include="Events\PostTargetEvent.cs" />
     <Compile Include="Events\PutTargetEvent.cs" />
     <Compile Include="Events\SetTargetIdEvent.cs" />

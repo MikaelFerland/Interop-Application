@@ -53,11 +53,28 @@ namespace Interop.Modules.Client.Server
 
                         _eventAggregator.GetEvent<PostTargetEvent>().Publish(tInfo);
 
+                        response.Message = "TARGET ADDED";
+                        break;
+                    }
 
+                case InteropTargetMessage.OperationsTypes.DELETE:
+                    {
+                        _eventAggregator.GetEvent<DeleteTargetEvent>().Publish(tInfo.InteropID);
+                        response.Message = "TARGET DELETED";
+                        break;
+                    }
+
+                case InteropTargetMessage.OperationsTypes.EDIT:
+                    {
+                        _eventAggregator.GetEvent<PutTargetEvent>().Publish(tInfo);
+                        
                         break;
                     }
                 default:
-                    break;
+                    {
+                        response.Message = "OPERATION NOT SUPPORTED";
+                        break;
+                    }                    
             }
             
             return response;            

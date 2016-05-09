@@ -6,6 +6,7 @@ using Interop.Modules.Client.Requests;
 using Newtonsoft.Json;
 using Prism.Events;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net;
@@ -13,6 +14,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Interop.Modules.Client.Services
 {
@@ -23,6 +26,7 @@ namespace Interop.Modules.Client.Services
         const string HOST = "http://mikaelferland.com:80/";
 
         static object[] REQUESTS = { new GetServerInfo(), new GetTargets(), new GetObstacles() };
+        ConcurrentDictionary<int, byte[]> _listOfImages = new ConcurrentDictionary<int, byte[]>();
         BackgroundWorker bw = new BackgroundWorker();
 
         IEventAggregator _eventAggregator;
@@ -43,10 +47,13 @@ namespace Interop.Modules.Client.Services
 
                 bw.DoWork += Bw_DoWork;
                 bw.RunWorkerAsync();
+                
                 _eventAggregator.GetEvent<UpdateLoginStatusEvent>().Publish(string.Format("Connected as {0}", USER));
 
                 _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(TryPostDroneTelemetry, true);
                 _eventAggregator.GetEvent<PostTargetEvent>().Subscribe(TryPostTarget, true);
+                _eventAggregator.GetEvent<PutTargetEvent>().Subscribe(TryUpdateTarget, true);
+                _eventAggregator.GetEvent<DeleteTargetEvent>().Subscribe(TryDeleteTarget, true);
             }
         }
 
@@ -59,6 +66,8 @@ namespace Interop.Modules.Client.Services
                 Task<List<Target>> targetsTask = Task.Run(() => RunAsync<List<Target>>((IRequest)REQUESTS[1]).Result);
                 Task<Obstacles> obstaclesTask = Task.Run(() => RunAsync<Obstacles>((IRequest)REQUESTS[2]).Result);
 
+                Task<bool> isImagesLoaded = Task.Run(() => LoadImages(targetsTask.Result));
+
                 serverInfoTask.Wait();
                 targetsTask.Wait();
                 obstaclesTask.Wait();
@@ -66,7 +75,7 @@ namespace Interop.Modules.Client.Services
                 _eventAggregator.GetEvent<UpdateServerInfoEvent>().Publish(serverInfoTask.Result);
                 _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(targetsTask.Result);
                 _eventAggregator.GetEvent<UpdateObstaclesEvent>().Publish(obstaclesTask.Result);
-
+                
                 //Console.WriteLine(serverInfoTask.Result.server_time);
                 //Console.WriteLine(targetsTask.Result);
                 //Console.WriteLine(obstaclesTask.Result);
@@ -119,29 +128,93 @@ namespace Interop.Modules.Client.Services
             }
         }
 
-        public void TryPostDroneTelemetry(DroneTelemetry droneTelemetry)
+        public async void TryPostDroneTelemetry(DroneTelemetry droneTelemetry)
         {
             bool isPosted = false;
 
             if (this._cookieContainer != null && droneTelemetry.GlobalPositionInt != null)
             {
-                isPosted = PostDroneTelemetry(droneTelemetry);
+                isPosted = await PostDroneTelemetry(droneTelemetry);
             }
             Console.WriteLine(isPosted.ToString());
         }
 
-        public void TryPostTarget(InteropTargetMessage interopTargetMessage)
+        public async void TryPostTarget(InteropTargetMessage interopTargetMessage)
         {
-            bool isPosted = false;
+            bool isTargetPosted = false;
 
             if (interopTargetMessage != null)
             {
-                isPosted = PostTarget(interopTargetMessage);
+                isTargetPosted = await PostTarget(interopTargetMessage);
             }
-            Console.WriteLine(isPosted.ToString());
+            Console.WriteLine(isTargetPosted.ToString());
         }
 
-        public bool PostDroneTelemetry(DroneTelemetry droneTelemetry)
+        public async void TryUpdateTarget(InteropTargetMessage interopTargetMessage)
+        {
+            bool isTargetUpdated = false;
+
+            if (interopTargetMessage != null)
+            {
+                isTargetUpdated = await PutTarget(interopTargetMessage);
+            }
+            Console.WriteLine(isTargetUpdated.ToString());
+        }
+
+        public async void TryDeleteTarget(int interopId)
+        {
+            bool isTargetDeleted = false;
+
+            if (interopId > -1)
+            {
+                isTargetDeleted = await DeleteTarget(interopId);
+            }
+            Console.WriteLine(isTargetDeleted.ToString());
+        }
+
+        public async Task<byte[]> LoadImage(int Id)
+        {
+            BitmapImage bitmapImage  = new BitmapImage();
+            byte[] emptyImage = new Byte[1];
+
+            using (var handler       = new HttpClientHandler() { CookieContainer = _cookieContainer })
+            using (HttpClient client = new HttpClient(handler))
+            {
+                client.BaseAddress = new Uri(HOST);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("image/jpeg"));
+
+                using (var response = await client.GetAsync($"/api/targets/{Id}/image"))
+                {
+                    response.EnsureSuccessStatusCode();
+
+                    if (response.IsSuccessStatusCode == true)
+                    {
+                        byte[] inputStream = await response.Content.ReadAsByteArrayAsync();
+                        return inputStream;
+                    }                    
+                }                            
+            }
+            return emptyImage;
+        }
+
+        public async Task<bool> LoadImages(List<Target> targets)
+        {
+            bool isImagesLoaded = false;
+            foreach( Target target in targets)
+            {
+                if (!this._listOfImages.ContainsKey(target.id))
+                {
+                    byte[] imageBytes = await LoadImage(target.id);
+                    _listOfImages.TryAdd(target.id, imageBytes);
+                    isImagesLoaded = true;
+                }                
+            }
+            _eventAggregator.GetEvent<TargetImagesEvent>().Publish(_listOfImages);
+            return isImagesLoaded;
+        }
+
+        public async Task<bool> PostDroneTelemetry(DroneTelemetry droneTelemetry)
         {
             using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
 
@@ -157,19 +230,18 @@ namespace Interop.Modules.Client.Services
                     new KeyValuePair<string, string>("uas_heading", droneTelemetry.AltitudeMSL.ToString()),
                 });
 
-                var result = client.PostAsync("/api/telemetry", content).Result;
+                var result = (await client.PostAsync("/api/telemetry", content));               
                 result.EnsureSuccessStatusCode();
                 return result.IsSuccessStatusCode;
             }
         }
 
-        public bool PostTarget(InteropTargetMessage interopMessage)
+        public async Task<bool> PostTarget(InteropTargetMessage interopMessage)
         {
             using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
 
             using (var client = new HttpClient(handler))
             {
-                int id = -1;
                 client.BaseAddress = new Uri(HOST);
                 Target newTarget = new Target();
                 
@@ -183,13 +255,14 @@ namespace Interop.Modules.Client.Services
                 newTarget.alphanumeric       = interopMessage.Character.ToString();
                 newTarget.description        = interopMessage.TargetName;
 
-                var result = client.PostAsync("/api/targets", new StringContent(JsonConvert.SerializeObject(newTarget))).Result;
+                var result = await client.PostAsync("/api/targets", new StringContent(JsonConvert.SerializeObject(newTarget)));
                 Task<string> serverResponse = result.Content.ReadAsStringAsync();
-                Target createdTarget = JsonConvert.DeserializeObject<Target>(serverResponse.Result);
 
+                Target createdTarget = JsonConvert.DeserializeObject<Target>(serverResponse.Result);
                 if (createdTarget != null)
                 {
                     _eventAggregator.GetEvent<SetTargetIdEvent>().Publish(createdTarget.id);
+                    await PostImage(interopMessage, createdTarget.id);
                 }                
 
                 result.EnsureSuccessStatusCode();
@@ -197,7 +270,7 @@ namespace Interop.Modules.Client.Services
             }
         }
 
-        public bool PostImage(InteropTargetMessage interopMessage)
+        public async Task<bool> PostImage(InteropTargetMessage interopMessage, int targetId)
         {
             using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
 
@@ -207,14 +280,13 @@ namespace Interop.Modules.Client.Services
                 var imageBytes = new ByteArrayContent(interopMessage.Image);
                 imageBytes.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
 
-                var result = client.PostAsync("/api/targets", imageBytes).Result;
-                
+                var result = await client.PostAsync($"/api/targets/{targetId}/image", imageBytes);                
                 result.EnsureSuccessStatusCode();
                 return result.IsSuccessStatusCode;
             }
         }
 
-        public bool PutTarget(InteropTargetMessage interopMessage)
+        public async Task<bool> PutTarget(InteropTargetMessage interopMessage)
         {
             using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
 
@@ -233,13 +305,13 @@ namespace Interop.Modules.Client.Services
                 newTarget.alphanumeric_color = interopMessage.ForegroundColor.ToString();
                 newTarget.alphanumeric = interopMessage.Character.ToString();
 
-                var result = client.PutAsync($"/api/targets/{interopMessage.InteropID}", new StringContent(JsonConvert.SerializeObject(newTarget))).Result;
+                var result = await client.PutAsync($"/api/targets/{interopMessage.InteropID}", new StringContent(JsonConvert.SerializeObject(newTarget)));
                 result.EnsureSuccessStatusCode();
                 return result.IsSuccessStatusCode;
             }
         }
 
-        public bool DeleteTarget(InteropTargetMessage interopMessage)
+        public async Task<bool> DeleteTarget(int interopId)
         {
             using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
 
@@ -247,7 +319,7 @@ namespace Interop.Modules.Client.Services
             {
                 client.BaseAddress = new Uri(HOST);
                                 
-                var result = client.DeleteAsync($"/api/targets/{interopMessage.InteropID}").Result;
+                var result = await client.DeleteAsync($"/api/targets/{interopId}");
                 result.EnsureSuccessStatusCode();
                 return result.IsSuccessStatusCode;
             }

@@ -34,11 +34,13 @@ namespace Interop.Modules.Client.Services
 
             NetTcpBinding binding = new NetTcpBinding();
             binding.Security.Mode = SecurityMode.None;
+            binding.MaxReceivedMessageSize = 30000000;
 
             string myIP = GetLocalIPAddress();
 
             Uri baseAddress = new Uri($"net.tcp://{myIP}:8000/targetserver");
             _serviceHost = new ServiceHost(typeof(Server.TargetServer), baseAddress);
+            ;
             var instanceProvider = new InstanceProviderBehavior<ITargetServer>(() => new Server.TargetServer(eventAggregator));
             _serviceHost.AddServiceEndpoint(typeof(ITargetServer), binding, baseAddress);
             instanceProvider.AddToAllContracts(_serviceHost);

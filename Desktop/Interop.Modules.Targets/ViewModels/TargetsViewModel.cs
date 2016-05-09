@@ -6,8 +6,11 @@ using Prism.Events;
 using Prism.Mvvm;
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Interop.Modules.Targets.ViewModels
 {
@@ -43,14 +46,14 @@ namespace Interop.Modules.Targets.ViewModels
         {
             get
             {
-                return _targets;
+                return _targets.OrderByDescending(t => t.id).ToList();
             }
             set
             {
                 TargetEqualityComparer TargetEqC = new TargetEqualityComparer();
                 if (!ScrambledEquals(Targets.OrderBy(t => t), value.OrderBy(t => t), TargetEqC))
                 //if(!Enumerable.SequenceEqual(_targets.OrderBy(t => t.id), value.OrderBy(t => t.id),TargetEqC))
-                { 
+                {                    
                     if (SetProperty(ref _targets, value))
                     {
                         //this.OnPropertyChanged(() => this.);
@@ -68,7 +71,40 @@ namespace Interop.Modules.Targets.ViewModels
             }
             set
             {
+
                 if (SetProperty(ref _currentTarget, value))
+                {
+                    _eventAggregator.GetEvent<TargetImagesEvent>().Subscribe(delegate (ConcurrentDictionary<int, byte[]> dictBytesImage)
+                    {
+                        if (dictBytesImage.Keys.Contains(CurrentTarget.id))
+                        {
+                            var currentImage = dictBytesImage[CurrentTarget.id];
+
+                            DisplayedImage = (BitmapSource)new ImageSourceConverter().ConvertFrom(currentImage);
+
+                            //using (var ms = new System.IO.MemoryStream(currentImage))
+                            //{
+                            //    var image = new BitmapImage();
+                            //    image.BeginInit();
+                            //    image.CacheOption = BitmapCacheOption.OnLoad; // here
+                            //    image.StreamSource = ms;
+                            //    image.EndInit();
+                            //    DisplayedImage = image;
+                            //}
+                        }
+                    });
+                    //this.OnPropertyChanged(() => this.);
+                }
+            }
+        }
+
+        ImageSource _displayedImage;
+        public ImageSource DisplayedImage
+        {
+            get { return this._displayedImage; }
+            set
+            {
+                if (SetProperty(ref _displayedImage, value))
                 {
                     //this.OnPropertyChanged(() => this.);
                 }
