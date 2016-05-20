@@ -47,7 +47,7 @@ namespace Interop.Modules.Client.Services
 
                 bw.DoWork += Bw_DoWork;
                 bw.RunWorkerAsync();
-                
+
                 _eventAggregator.GetEvent<UpdateLoginStatusEvent>().Publish(string.Format("Connected as {0}", USER));
 
                 _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(TryPostDroneTelemetry, true);
@@ -57,31 +57,130 @@ namespace Interop.Modules.Client.Services
             }
         }
 
+        //TODO: Clean this method when the tests are done.
         private void Bw_DoWork(object sender, DoWorkEventArgs e)
         {
             //TODO: Latency monitoring, handle timeout if server is down.
             while (!(sender as BackgroundWorker).CancellationPending)
             {
-                Task<ServerInfo> serverInfoTask = Task.Run(() => RunAsync<ServerInfo>((IRequest)REQUESTS[0]).Result);
-                Task<List<Target>> targetsTask = Task.Run(() => RunAsync<List<Target>>((IRequest)REQUESTS[1]).Result);
-                Task<Obstacles> obstaclesTask = Task.Run(() => RunAsync<Obstacles>((IRequest)REQUESTS[2]).Result);
+                Task<ServerInfo> serverInfoTask;
+                Task<List<Target>> targetsTask;
+                Task<Obstacles> obstaclesTask;
+                Task<bool> isImagesLoaded;
 
-                Task<bool> isImagesLoaded = Task.Run(() => LoadImages(targetsTask.Result));
+                try
+                {
+                    serverInfoTask = Task.Run(() =>
+                    {
+                        try
+                        {
+                            Task<ServerInfo> temp = RunAsync<ServerInfo>((IRequest)REQUESTS[0]);
+                            return temp.Result;
+                        }
+                        catch (AggregateException ae)
+                        {
+                            //Console.WriteLine("One or more exceptions occurred: ");
+                            //foreach (var ex in ae.Flatten().InnerExceptions)
+                            //    Console.WriteLine("   {0}", ex.Message);
+                            return null;
+                        }
+                    });
 
-                serverInfoTask.Wait();
-                targetsTask.Wait();
-                obstaclesTask.Wait();
+                    targetsTask = Task.Run(() =>
+                    {
+                        try
+                        {
+                            Task<List<Target>> temp = RunAsync<List<Target>>((IRequest)REQUESTS[1]);
+                            return temp.Result;
+                        }
+                        catch (AggregateException ae)
+                        {
+                            //Console.WriteLine("One or more exceptions occurred: ");
+                            //foreach (var ex in ae.Flatten().InnerExceptions)
+                            //    Console.WriteLine("   {0}", ex.Message);
+                            return null;
+                        }
+                    });
 
-                _eventAggregator.GetEvent<UpdateServerInfoEvent>().Publish(serverInfoTask.Result);
-                _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(targetsTask.Result);
-                _eventAggregator.GetEvent<UpdateObstaclesEvent>().Publish(obstaclesTask.Result);
-                
+                    obstaclesTask = Task.Run(() =>
+                    {
+                        try
+                        {
+                            Task<Obstacles> temp = RunAsync<Obstacles>((IRequest)REQUESTS[2]);
+                            return temp.Result;
+                        }
+                        catch (AggregateException ae)
+                        {
+                            //Console.WriteLine("One or more exceptions occurred: ");
+                            //foreach (var ex in ae.Flatten().InnerExceptions)
+                            //    Console.WriteLine("   {0}", ex.Message);
+                            return null;
+                        }
+                    });
+
+                    obstaclesTask = Task.Run(() =>
+                    {
+                        try
+                        {
+                            Task<Obstacles> temp = RunAsync<Obstacles>((IRequest)REQUESTS[2]);
+                            return temp.Result;
+                        }
+                        catch (AggregateException ae)
+                        {
+                            //Console.WriteLine("One or more exceptions occurred: ");
+                            //foreach (var ex in ae.Flatten().InnerExceptions)
+                            //    Console.WriteLine("   {0}", ex.Message);
+                            return null;
+                        }
+
+                    });
+
+                    isImagesLoaded = Task.Run(() =>
+                    {
+                        try
+                        {
+                            Task<bool> temp = LoadImages(targetsTask.Result);
+                            return temp.Result;
+                        }
+                        catch (AggregateException ae)
+                        {
+                            //Console.WriteLine("One or more exceptions occurred: ");
+                            //foreach (var ex in ae.Flatten().InnerExceptions)
+                            //    Console.WriteLine("   {0}", ex.Message);
+                            return false;
+                        }
+                    });
+
+                    //serverInfoTask = Task.Run(() => RunAsync<ServerInfo>((IRequest)REQUESTS[0]).Result);
+                    //targetsTask = Task.Run(() => RunAsync<List<Target>>((IRequest)REQUESTS[1]).Result);
+                    //obstaclesTask = Task.Run(() => RunAsync<Obstacles>((IRequest)REQUESTS[2]).Result);
+                    //
+                    //Task<bool> isImagesLoaded = Task.Run(() => LoadImages(targetsTask.Result));
+
+                    serverInfoTask.Wait();
+                    targetsTask.Wait();
+                    obstaclesTask.Wait();
+
+                    if (serverInfoTask?.Result != null)
+                        _eventAggregator.GetEvent<UpdateServerInfoEvent>().Publish(serverInfoTask.Result);
+                    if (targetsTask?.Result != null)
+                        _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(targetsTask.Result);
+                    if (obstaclesTask?.Result != null)
+                        _eventAggregator.GetEvent<UpdateObstaclesEvent>().Publish(obstaclesTask.Result);
+                }
+                catch (AggregateException ae)
+                {
+                    //Console.WriteLine("One or more exceptions occurred: ");
+                    //foreach (var ex in ae.Flatten().InnerExceptions)
+                    //    Console.WriteLine("   {0}", ex.Message);
+                }
+
                 //Console.WriteLine(serverInfoTask.Result.server_time);
                 //Console.WriteLine(targetsTask.Result);
                 //Console.WriteLine(obstaclesTask.Result);
 
                 // You can decrease the value to get faster refresh
-                Thread.Sleep(500);
+                Thread.Sleep(100);
             }
         }
 
@@ -174,10 +273,10 @@ namespace Interop.Modules.Client.Services
 
         public async Task<byte[]> LoadImage(int Id)
         {
-            BitmapImage bitmapImage  = new BitmapImage();
+            BitmapImage bitmapImage = new BitmapImage();
             byte[] emptyImage = new Byte[1];
 
-            using (var handler       = new HttpClientHandler() { CookieContainer = _cookieContainer })
+            using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
             using (HttpClient client = new HttpClient(handler))
             {
                 client.BaseAddress = new Uri(HOST);
@@ -192,8 +291,8 @@ namespace Interop.Modules.Client.Services
                     {
                         byte[] inputStream = await response.Content.ReadAsByteArrayAsync();
                         return inputStream;
-                    }                    
-                }                            
+                    }
+                }
             }
             return emptyImage;
         }
@@ -201,14 +300,14 @@ namespace Interop.Modules.Client.Services
         public async Task<bool> LoadImages(List<Target> targets)
         {
             bool isImagesLoaded = false;
-            foreach( Target target in targets)
+            foreach (Target target in targets)
             {
                 if (!this._listOfImages.ContainsKey(target.id))
                 {
                     byte[] imageBytes = await LoadImage(target.id);
                     _listOfImages.TryAdd(target.id, imageBytes);
                     isImagesLoaded = true;
-                }                
+                }
             }
             _eventAggregator.GetEvent<TargetImagesEvent>().Publish(_listOfImages);
             return isImagesLoaded;
@@ -230,7 +329,7 @@ namespace Interop.Modules.Client.Services
                     new KeyValuePair<string, string>("uas_heading", droneTelemetry.AltitudeMSL.ToString()),
                 });
 
-                var result = (await client.PostAsync("/api/telemetry", content));               
+                var result = (await client.PostAsync("/api/telemetry", content));
                 result.EnsureSuccessStatusCode();
                 return result.IsSuccessStatusCode;
             }
@@ -244,16 +343,16 @@ namespace Interop.Modules.Client.Services
             {
                 client.BaseAddress = new Uri(HOST);
                 Target newTarget = new Target();
-                
-                newTarget.type               = interopMessage.TargetType.ToString();
-                newTarget.latitude           = interopMessage.Latitude;
-                newTarget.longitude          = interopMessage.Longitude;
-                newTarget.orientation        = interopMessage.Orientation.ToString();
-                newTarget.shape              = interopMessage.Shape.ToString();
-                newTarget.background_color   = interopMessage.BackgroundColor.ToString();
+
+                newTarget.type = interopMessage.TargetType.ToString();
+                newTarget.latitude = interopMessage.Latitude;
+                newTarget.longitude = interopMessage.Longitude;
+                newTarget.orientation = interopMessage.Orientation.ToString();
+                newTarget.shape = interopMessage.Shape.ToString();
+                newTarget.background_color = interopMessage.BackgroundColor.ToString();
                 newTarget.alphanumeric_color = interopMessage.ForegroundColor.ToString();
-                newTarget.alphanumeric       = interopMessage.Character.ToString();
-                newTarget.description        = interopMessage.TargetName;
+                newTarget.alphanumeric = interopMessage.Character.ToString();
+                newTarget.description = interopMessage.TargetName;
 
                 var result = await client.PostAsync("/api/targets", new StringContent(JsonConvert.SerializeObject(newTarget)));
                 Task<string> serverResponse = result.Content.ReadAsStringAsync();
@@ -263,7 +362,7 @@ namespace Interop.Modules.Client.Services
                 {
                     _eventAggregator.GetEvent<SetTargetIdEvent>().Publish(createdTarget.id);
                     await PostImage(interopMessage, createdTarget.id);
-                }                
+                }
 
                 result.EnsureSuccessStatusCode();
                 return result.IsSuccessStatusCode;
@@ -280,7 +379,7 @@ namespace Interop.Modules.Client.Services
                 var imageBytes = new ByteArrayContent(interopMessage.Image);
                 imageBytes.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
 
-                var result = await client.PostAsync($"/api/targets/{targetId}/image", imageBytes);                
+                var result = await client.PostAsync($"/api/targets/{targetId}/image", imageBytes);
                 result.EnsureSuccessStatusCode();
                 return result.IsSuccessStatusCode;
             }
@@ -318,7 +417,7 @@ namespace Interop.Modules.Client.Services
             using (var client = new HttpClient(handler))
             {
                 client.BaseAddress = new Uri(HOST);
-                                
+
                 var result = await client.DeleteAsync($"/api/targets/{interopId}");
                 result.EnsureSuccessStatusCode();
                 return result.IsSuccessStatusCode;
