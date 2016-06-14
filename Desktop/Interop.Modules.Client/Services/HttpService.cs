@@ -9,6 +9,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -21,9 +22,10 @@ namespace Interop.Modules.Client.Services
 {
     public class HttpService : IHttpService
     {
-        const string USER = "simpleuser";
-        const string PASS = "simplepass";
-        const string HOST = "http://mikaelferland.com:80/";
+        string USER = "simpleuser";
+        string PASS = "simplepass";
+        string HOST = "http://mikaelferland.com:80/";
+        string REFRESH_RATE = "500";
 
         static object[] REQUESTS = { new GetServerInfo(), new GetTargets(), new GetObstacles() };
         ConcurrentDictionary<int, byte[]> _listOfImages = new ConcurrentDictionary<int, byte[]>();
@@ -39,6 +41,12 @@ namespace Interop.Modules.Client.Services
                 throw new ArgumentNullException("eventAggregator");
             }
             _eventAggregator = eventAggregator;
+
+            var appSettings = ConfigurationManager.AppSettings;
+            USER = appSettings["USERNAME"];
+            PASS = appSettings["PASSWORD"];
+            HOST = appSettings["INTEROP_HOST"];
+            REFRESH_RATE = appSettings["REFRESH_RATE"];
 
             if (true == Login())
             {
@@ -180,7 +188,7 @@ namespace Interop.Modules.Client.Services
                 //Console.WriteLine(obstaclesTask.Result);
 
                 // You can decrease the value to get faster refresh
-                Thread.Sleep(100);
+                Thread.Sleep(Int32.Parse(REFRESH_RATE));
             }
         }
 
