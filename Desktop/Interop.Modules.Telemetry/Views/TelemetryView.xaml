@@ -8,10 +8,12 @@
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:cus="clr-namespace:Interop.Modules.Telemetry.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="30" d:DesignWidth="300">
+             d:DesignHeight="30" d:DesignWidth="350">
 
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
@@ -26,6 +28,8 @@
         <Label Grid.Column="4" Foreground="Lime" VerticalAlignment="Center" Content="{Binding DronePosition}"/>
         <Label Grid.Column="5" Foreground="Lime" VerticalAlignment="Center" Content="HDG "/>
         <Label Grid.Column="6" Foreground="Lime" VerticalAlignment="Center" Content="{Binding DroneHeading}"/>
+        <Label Grid.Column="7" Foreground="Lime" VerticalAlignment="Center" Content="ALTITUDE MSL "/>
+        <Label Grid.Column="8" Foreground="Lime" VerticalAlignment="Center" Content="{Binding DroneAltitude}"/>
     </Grid>
 </UserControl>
     
