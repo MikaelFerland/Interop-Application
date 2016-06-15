@@ -9,6 +9,7 @@ using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Interop.Modules.Obstacles.ViewModels
 {
@@ -51,7 +52,7 @@ namespace Interop.Modules.Obstacles.ViewModels
         {
             //TODO: Update each obstacles with their radius on the map
             SetObstacles(obstacles);
-
+            
             //TODO: Remove the following line when the debug will be finish
             //this.Position = new Point(obstacles.moving_obstacles[0].latitude, obstacles.moving_obstacles[0].longitude);
         }
@@ -74,14 +75,24 @@ namespace Interop.Modules.Obstacles.ViewModels
                             var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
                             var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.cylinder_radius * 12.0);
 
-                            var shape = new System.Windows.Shapes.Ellipse();
+                            var grid = new Grid();
+                            var shape = new System.Windows.Shapes.Ellipse();                            
                             shape.Height = res * 2;
                             shape.Width = res * 2;
                             shape.Fill = System.Windows.Media.Brushes.Cyan;
                             shape.Opacity = 10;
 
+                            var label = new Label();
+                            label.Content = obstacle.cylinder_height;
+                            label.HorizontalAlignment = HorizontalAlignment.Center;
+                            label.VerticalAlignment = VerticalAlignment.Center;
+
+                            grid.Children.Add(shape);
+                            grid.Children.Add(label);
+
                             marker.Offset = new Point(-res, -res);
-                            marker.Shape = shape;
+                            //marker.Shape = shape;
+                            marker.Shape = grid;
                             _map.Markers.Add(marker);
                         }
 
@@ -91,16 +102,27 @@ namespace Interop.Modules.Obstacles.ViewModels
                             var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
                             var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.sphere_radius * 12.0);
 
+                            var grid = new Grid();
                             var shape = new System.Windows.Shapes.Ellipse();
                             shape.Height = res * 2.0;
                             shape.Width = res * 2.0;
                             shape.Fill = System.Windows.Media.Brushes.Red;
                             shape.Opacity = 10;
 
+                            var label = new Label();
+                            label.Content = obstacle.altitude_msl.ToString("F0", System.Globalization.CultureInfo.InvariantCulture);
+                            label.HorizontalAlignment = HorizontalAlignment.Center;
+                            label.VerticalAlignment = VerticalAlignment.Center;
+
+                            grid.Children.Add(shape);
+                            grid.Children.Add(label);
+
                             marker.Offset = new Point(-res, -res);
-                            marker.Shape = shape;
+                            //marker.Shape = shape;
+                            marker.Shape = grid;
                             _map.Markers.Add(marker);
                         }
+
                     });
                 }
                 catch (Exception ex)
