@@ -76,7 +76,7 @@ namespace Interop.Modules.Obstacles.ViewModels
             var strokeBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
             strokeBrush.Opacity = 1;
             var fillBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Yellow);
-            fillBrush.Opacity = 0.3;
+            fillBrush.Opacity = 0.1;
 
             polygon.Fill = fillBrush;
             polygon.Stroke = strokeBrush;
