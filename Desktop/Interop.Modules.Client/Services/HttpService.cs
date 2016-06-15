@@ -360,7 +360,7 @@ namespace Interop.Modules.Client.Services
                 newTarget.background_color = interopMessage.BackgroundColor.ToString();
                 newTarget.alphanumeric_color = interopMessage.ForegroundColor.ToString();
                 newTarget.alphanumeric = interopMessage.Character.ToString();
-                newTarget.description = interopMessage.TargetName;
+                newTarget.description = interopMessage.Description;
 
                 var result = await client.PostAsync("/api/targets", new StringContent(JsonConvert.SerializeObject(newTarget)));
                 Task<string> serverResponse = result.Content.ReadAsStringAsync();
