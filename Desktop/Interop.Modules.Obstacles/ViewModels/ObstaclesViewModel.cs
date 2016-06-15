@@ -56,7 +56,6 @@ namespace Interop.Modules.Obstacles.ViewModels
 
         public void Update_Obstacles(Infrastructure.Models.Obstacles obstacles)
         {
-            //TODO: Update each obstacles with their radius on the map
             SetObstacles(obstacles);
             
             //TODO: Remove the following line when the debug will be finish
@@ -78,7 +77,7 @@ namespace Interop.Modules.Obstacles.ViewModels
         {
             _polygonPointsLatLng.Clear();
 
-            using (StreamReader sr = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + "\\geoFence.txt"))
+            using (StreamReader sr = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + "\\geoFence.data"))
             {
                 string s = String.Empty;
                 while ((s = sr.ReadLine()) != null)
@@ -93,15 +92,6 @@ namespace Interop.Modules.Obstacles.ViewModels
             
             FetchGeoFencePoints();
 
-            //TODO Points must be set in the app.config file
-            //_polygonPointsLatLng = new List<PointLatLng>() {
-            //    new PointLatLng(38.149750, -76.437706),
-            //    new PointLatLng(38.152678, -76.433777),
-            //    new PointLatLng(38.149570, -76.426612),
-            //    new PointLatLng(38.146975, -76.432540),
-            //    new PointLatLng(38.149750, -76.437706)
-            //    };
-            
             var geofence = new GMapPolygon(_polygonPointsLatLng);
 
             var polygon = new System.Windows.Shapes.Path();
@@ -147,6 +137,7 @@ namespace Interop.Modules.Obstacles.ViewModels
 
                             var label = new Label();
                             label.Content = obstacle.cylinder_height;
+                            label.FontWeight = FontWeights.Bold;
                             label.HorizontalAlignment = HorizontalAlignment.Center;
                             label.VerticalAlignment = VerticalAlignment.Center;
 
@@ -154,7 +145,6 @@ namespace Interop.Modules.Obstacles.ViewModels
                             grid.Children.Add(label);
 
                             marker.Offset = new Point(-res, -res);
-                            //marker.Shape = shape;
                             marker.Shape = grid;
                             _map.Markers.Add(marker);
                         }
@@ -174,6 +164,7 @@ namespace Interop.Modules.Obstacles.ViewModels
 
                             var label = new Label();
                             label.Content = obstacle.altitude_msl.ToString("F0", System.Globalization.CultureInfo.InvariantCulture);
+                            label.FontWeight = FontWeights.Bold;
                             label.HorizontalAlignment = HorizontalAlignment.Center;
                             label.VerticalAlignment = VerticalAlignment.Center;
 
@@ -181,7 +172,6 @@ namespace Interop.Modules.Obstacles.ViewModels
                             grid.Children.Add(label);
 
                             marker.Offset = new Point(-res, -res);
-                            //marker.Shape = shape;
                             marker.Shape = grid;
                             _map.Markers.Add(marker);
                         }
