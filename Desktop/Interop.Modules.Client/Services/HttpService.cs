@@ -48,7 +48,8 @@ namespace Interop.Modules.Client.Services
             HOST = appSettings["INTEROP_HOST"];
             REFRESH_RATE = appSettings["REFRESH_RATE"];
 
-            if (true == Login())
+            //if (true == Login())
+            do
             {
                 bw.WorkerSupportsCancellation = true;
                 bw.WorkerReportsProgress = true;
@@ -62,13 +63,13 @@ namespace Interop.Modules.Client.Services
                 _eventAggregator.GetEvent<PostTargetEvent>().Subscribe(TryPostTarget, true);
                 _eventAggregator.GetEvent<PutTargetEvent>().Subscribe(TryUpdateTarget, true);
                 _eventAggregator.GetEvent<DeleteTargetEvent>().Subscribe(TryDeleteTarget, true);
-            }
+            } while (true != Login());
         }
 
         //TODO: Clean this method when the tests are done.
         private void Bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            //TODO: Latency monitoring, handle timeout if server is down.
+            //TODO: Latency monitoring, handle timeout if server is down.            
             while (!(sender as BackgroundWorker).CancellationPending)
             {
                 Task<ServerInfo> serverInfoTask;
