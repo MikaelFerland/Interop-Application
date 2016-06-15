@@ -9,6 +9,8 @@ using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -19,6 +21,7 @@ namespace Interop.Modules.Obstacles.ViewModels
         IEventAggregator _eventAggregator;
         Views.Map _map;
         Views.ObstaclesView _view;
+        List<PointLatLng> _polygonPointsLatLng = new List<PointLatLng>();
 
         public ObstaclesViewModel(IEventAggregator eventAggregator, IView view)
         {
@@ -38,6 +41,8 @@ namespace Interop.Modules.Obstacles.ViewModels
                         
             _eventAggregator.GetEvent<UpdateObstaclesEvent>().Subscribe(Update_Obstacles);
             _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(Update_DronePosition);
+
+            SetGeofence();
         }
 
         public double scaleDimension(double latitude, double zoomLevel, double mapDimension)
@@ -58,19 +63,46 @@ namespace Interop.Modules.Obstacles.ViewModels
             //this.Position = new Point(obstacles.moving_obstacles[0].latitude, obstacles.moving_obstacles[0].longitude);
         }
 
+        public PointLatLng ExtactLatLon(string combinedPoint)
+        {
+            if (combinedPoint != string.Empty)
+            {
+                var latLon = combinedPoint.Split(':');
+                var pointLatLon = new PointLatLng(double.Parse(latLon[0]), double.Parse(latLon[1]));
+                return pointLatLon;
+            }
+            return PointLatLng.Empty;
+        }
+
+        public void FetchGeoFencePoints()
+        {
+            _polygonPointsLatLng.Clear();
+
+            using (StreamReader sr = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + "\\geoFence.txt"))
+            {
+                string s = String.Empty;
+                while ((s = sr.ReadLine()) != null)
+                {
+                    _polygonPointsLatLng.Add(ExtactLatLon(s));
+                }
+            }
+        }
 
         public void SetGeofence()
         {
-            //TODO Points must be set in the app.config file
-            List<PointLatLng> polygonPointsLatLng = new List<PointLatLng>() {
-                new PointLatLng(38.149750, -76.437706),
-                new PointLatLng(38.152678, -76.433777),
-                new PointLatLng(38.149570, -76.426612),
-                new PointLatLng(38.146975, -76.432540),
-                new PointLatLng(38.149750, -76.437706)
-                };
+            
+            FetchGeoFencePoints();
 
-            var geofence = new GMapPolygon(polygonPointsLatLng);
+            //TODO Points must be set in the app.config file
+            //_polygonPointsLatLng = new List<PointLatLng>() {
+            //    new PointLatLng(38.149750, -76.437706),
+            //    new PointLatLng(38.152678, -76.433777),
+            //    new PointLatLng(38.149570, -76.426612),
+            //    new PointLatLng(38.146975, -76.432540),
+            //    new PointLatLng(38.149750, -76.437706)
+            //    };
+            
+            var geofence = new GMapPolygon(_polygonPointsLatLng);
 
             var polygon = new System.Windows.Shapes.Path();
             var strokeBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
