@@ -8,6 +8,7 @@ using Interop.Infrastructure.Interfaces;
 using Prism.Events;
 using Prism.Mvvm;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -55,6 +56,36 @@ namespace Interop.Modules.Obstacles.ViewModels
             
             //TODO: Remove the following line when the debug will be finish
             //this.Position = new Point(obstacles.moving_obstacles[0].latitude, obstacles.moving_obstacles[0].longitude);
+        }
+
+
+        public void SetGeofence()
+        {
+            //TODO Points must be set in the app.config file
+            List<PointLatLng> polygonPointsLatLng = new List<PointLatLng>() {
+                new PointLatLng(38.149750, -76.437706),
+                new PointLatLng(38.152678, -76.433777),
+                new PointLatLng(38.149570, -76.426612),
+                new PointLatLng(38.146975, -76.432540),
+                new PointLatLng(38.149750, -76.437706)
+                };
+
+            var geofence = new GMapPolygon(polygonPointsLatLng);
+
+            var polygon = new System.Windows.Shapes.Path();
+            var strokeBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
+            strokeBrush.Opacity = 1;
+            var fillBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Yellow);
+            fillBrush.Opacity = 0.3;
+
+            polygon.Fill = fillBrush;
+            polygon.Stroke = strokeBrush;
+            polygon.StrokeThickness = 3;
+
+            geofence.Shape = polygon;
+            geofence.RegenerateShape(_map);
+
+            _map.Markers.Add(geofence);
         }
 
         public void SetObstacles(Infrastructure.Models.Obstacles obstacles)
@@ -123,6 +154,7 @@ namespace Interop.Modules.Obstacles.ViewModels
                             _map.Markers.Add(marker);
                         }
 
+                        SetGeofence();
                     });
                 }
                 catch (Exception ex)
