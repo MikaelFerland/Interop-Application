@@ -41,15 +41,15 @@ namespace Interop.Modules.Telemetry.ViewModels
 			if (droneTelemetry.GlobalPositionInt != null)
 			{
 				DronePosition = $"{droneTelemetry.Latitutde.ToString()}, {droneTelemetry.Longitude.ToString()}";
-                DroneAltitude = $"{droneTelemetry.AltitudeMSL.ToString()}, feet";
-            }
+				DroneAltitude = $"{droneTelemetry.AltitudeMSL.ToString()}, feet";
+			}
 
 			if (droneTelemetry.VfrHUD != null)
 			{
 				DroneHeading = $"{droneTelemetry.Heading.ToString()}";
 			}
-                        
-        }
+						
+		}
 
 		/// <summary>
 		/// 
@@ -89,23 +89,23 @@ namespace Interop.Modules.Telemetry.ViewModels
 			}
 		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        string _droneAltitude = string.Empty;
-        public string DroneAltitude
-        {
-            get
-            {
-                return _droneAltitude;
-            }
-            set
-            {
-                if (SetProperty(ref _droneAltitude, value))
-                {
-                    //this.OnPropertyChanged(() => this.);
-                }
-            }
-        }
-    }
+		/// <summary>
+		/// 
+		/// </summary>
+		string _droneAltitude = string.Empty;
+		public string DroneAltitude
+		{
+			get
+			{
+				return _droneAltitude;
+			}
+			set
+			{
+				if (SetProperty(ref _droneAltitude, value))
+				{
+					//this.OnPropertyChanged(() => this.);
+				}
+			}
+		}
+	}
 }

@@ -4,12 +4,11 @@ using GMap.NET.WindowsPresentation;
 
 using Interop.Infrastructure.Events;
 using Interop.Infrastructure.Interfaces;
-
+using Interop.Infrastructure.Models;
 using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,6 +21,8 @@ namespace Interop.Modules.Obstacles.ViewModels
         Views.Map _map;
         Views.ObstaclesView _view;
         List<PointLatLng> _polygonPointsLatLng = new List<PointLatLng>();
+        List<PointLatLng> _area = new List<PointLatLng>();
+        List<Target> _targets;
 
         public ObstaclesViewModel(IEventAggregator eventAggregator, IView view)
         {
@@ -41,8 +42,10 @@ namespace Interop.Modules.Obstacles.ViewModels
                         
             _eventAggregator.GetEvent<UpdateObstaclesEvent>().Subscribe(Update_Obstacles);
             _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(Update_DronePosition);
+            _eventAggregator.GetEvent<UpdateTargetsEvent>().Subscribe(Update_TargetsLocation);
 
             SetGeofence();
+            SetArea();
         }
 
         public double scaleDimension(double latitude, double zoomLevel, double mapDimension)
@@ -73,16 +76,16 @@ namespace Interop.Modules.Obstacles.ViewModels
             return PointLatLng.Empty;
         }
 
-        public void FetchGeoFencePoints()
+        public void FetchGeoFencePoints(string dataFile, List<PointLatLng> listOfPoint)
         {
             _polygonPointsLatLng.Clear();
 
-            using (StreamReader sr = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + "\\geoFence.data"))
+            using (StreamReader sr = File.OpenText(AppDomain.CurrentDomain.BaseDirectory + $"\\{dataFile}.data"))
             {
                 string s = String.Empty;
                 while ((s = sr.ReadLine()) != null)
                 {
-                    _polygonPointsLatLng.Add(ExtactLatLon(s));
+                    listOfPoint.Add(ExtactLatLon(s));
                 }
             }
         }
@@ -90,7 +93,7 @@ namespace Interop.Modules.Obstacles.ViewModels
         public void SetGeofence()
         {
             
-            FetchGeoFencePoints();
+            FetchGeoFencePoints("geoFence", _polygonPointsLatLng);
 
             var geofence = new GMapPolygon(_polygonPointsLatLng);
 
@@ -108,6 +111,63 @@ namespace Interop.Modules.Obstacles.ViewModels
             geofence.RegenerateShape(_map);
 
             _map.Markers.Add(geofence);
+        }
+
+        public void SetArea()
+        {
+            if (_area?.Count == 0)
+            {
+                FetchGeoFencePoints("area", _area);
+            }
+            
+            var area = new GMapPolygon(_area);
+
+            var polygon = new System.Windows.Shapes.Path();
+            var strokeBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.DarkBlue);
+            strokeBrush.Opacity = 0.4;
+            var fillBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.DarkBlue);
+            fillBrush.Opacity = 0.4;
+
+            polygon.Fill = fillBrush;
+            polygon.Stroke = strokeBrush;
+            polygon.StrokeThickness = 3;
+
+            area.Shape = polygon;
+            area.RegenerateShape(_map);
+
+            _map.Markers.Add(area);
+        }
+
+        public void SetTargets()
+        {
+            if (_targets != null && _targets.Count > 0)
+            {
+                foreach (Target target in _targets)
+                {
+                    var marker = new GMapMarker(new PointLatLng(target.latitude, target.longitude));
+                    var res = scaleDimension(target.latitude, _map.Zoom, 0.3 * 12.0);
+
+                    var grid = new Grid();
+                    var shape = new System.Windows.Shapes.Rectangle();
+                    shape.Height = res * 2;
+                    shape.Width = res * 2;
+                    shape.Fill = System.Windows.Media.Brushes.White;
+                    shape.Opacity = 10;
+
+                    var label = new Label();
+                    label.Content = target.id;
+                    label.FontWeight = FontWeights.Bold;
+                    label.HorizontalAlignment = HorizontalAlignment.Center;
+                    label.VerticalAlignment = VerticalAlignment.Center;
+
+                    grid.Children.Add(shape);
+                    grid.Children.Add(label);
+
+                    marker.Offset = new Point(-res, -res);
+                    marker.Shape = grid;
+                    _map.Markers.Add(marker);
+                }                
+            }
         }
 
         public void SetObstacles(Infrastructure.Models.Obstacles obstacles)
@@ -177,6 +237,8 @@ namespace Interop.Modules.Obstacles.ViewModels
                         }
 
                         SetGeofence();
+                        SetTargets();
+                        SetArea();
                     });
                 }
                 catch (Exception ex)
@@ -191,6 +253,14 @@ namespace Interop.Modules.Obstacles.ViewModels
             if (droneTelemetry.GlobalPositionInt != null)
             { 
                 this.Position = new Point(droneTelemetry.Latitutde, droneTelemetry.Longitude);
+            }
+        }
+
+        public void Update_TargetsLocation(List<Target> targets)
+        {
+            if (targets != null)
+            {
+                _targets = targets;
             }
         }
 
