@@ -50,6 +50,7 @@ namespace Interop.Examples.Client
             tbx_foregroundColor.Text = InteropTargetMessage.Colors.blue.ToString();
             tbx_area.Text = "125000";
 
+
             RunClient();
         }
 
@@ -122,6 +123,7 @@ namespace Interop.Examples.Client
             interopMessage.Character = tbx_character.Text;
             interopMessage.BackgroundColor = InteropTargetMessage.Colors.black;
             interopMessage.ForegroundColor = InteropTargetMessage.Colors.blue;
+            interopMessage.Description = "What's up guys? Nice to meet you.";
 
             double area;
             double.TryParse(tbx_area.Text, out area);
