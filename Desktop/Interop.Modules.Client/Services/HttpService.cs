@@ -407,7 +407,7 @@ namespace Interop.Modules.Client.Services
                     new KeyValuePair<string, string>("latitude", droneTelemetry.Latitutde.ToString()),
                     new KeyValuePair<string, string>("longitude", droneTelemetry.Longitude.ToString()),
                     new KeyValuePair<string, string>("altitude_msl", droneTelemetry.AltitudeMSL.ToString()),
-                    new KeyValuePair<string, string>("uas_heading", droneTelemetry.AltitudeMSL.ToString()),
+                    new KeyValuePair<string, string>("uas_heading", droneTelemetry.Heading.ToString()),
                 });
 
                 var result = (await client.PostAsync("/api/telemetry", content));
