@@ -2,7 +2,6 @@
 using Interop.Infrastructure.Interfaces;
 using Interop.Infrastructure.Models;
 
-using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
 
@@ -19,8 +18,7 @@ namespace Interop.Modules.Targets.ViewModels
     {
         IEventAggregator _eventAggregator;
         ITargetService _targetService;
-        public DelegateCommand DeleteTargetCommand { get; private set; }
-
+        
         public TargetsViewModel(IEventAggregator eventAggregator, ITargetService targetService)
         {
             if (eventAggregator == null)
@@ -35,14 +33,12 @@ namespace Interop.Modules.Targets.ViewModels
             _eventAggregator = eventAggregator;
             _targetService = targetService;
 
-            this.DeleteTargetCommand = new DelegateCommand(this.DeleteTarget, this.CanDeleteTarget);
-
             _eventAggregator.GetEvent<UpdateTargetsEvent>().Subscribe(Update_Targets);
         }
         
         public void Update_Targets(List<Target> targets)
         {
-            Targets = targets;
+            Targets = targets;           
         }
         
         IList<Target> _targets = new List<Target>();
@@ -64,16 +60,6 @@ namespace Interop.Modules.Targets.ViewModels
                     }
                 }
             }
-        }
-
-        private void DeleteTarget()
-        {
-            _eventAggregator.GetEvent<DeleteTargetEvent>().Publish(CurrentTarget.id);
-        }
-
-        private bool CanDeleteTarget()
-        {
-            return true;
         }
 
         public Target _currentTarget = null;
