@@ -8,12 +8,14 @@ using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Timers;
 
 namespace Interop.Modules.Telemetry.ViewModels
 {
 	public class TelemetryViewModel : BindableBase
 	{
 		IEventAggregator _eventAggregator;
+		static Timer _watchdog;
 
 		public TelemetryViewModel(IEventAggregator eventAggregator, ITelemetryService telemetryService)
 		{
@@ -29,6 +31,9 @@ namespace Interop.Modules.Telemetry.ViewModels
 
 			_eventAggregator = eventAggregator;
 
+			_watchdog = new Timer(1000);
+			_watchdog.Elapsed += new ElapsedEventHandler(Timer_Elapsed);
+
 			_eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(Update_Telemetry, true);
 
 			Title = "Telemetry Region";
@@ -38,17 +43,33 @@ namespace Interop.Modules.Telemetry.ViewModels
 
 		public void Update_Telemetry(Infrastructure.Models.DroneTelemetry droneTelemetry)
 		{
+			bool isTelemetryUpdated = false;
+
 			if (droneTelemetry.GlobalPositionInt != null)
 			{
 				DronePosition = $"{droneTelemetry.Latitutde.ToString()}, {droneTelemetry.Longitude.ToString()}";
 				DroneAltitude = $"{droneTelemetry.AltitudeMSL.ToString()}, feet";
+				isTelemetryUpdated = true;
 			}
 
 			if (droneTelemetry.VfrHUD != null)
 			{
 				DroneHeading = $"{droneTelemetry.Heading.ToString()}";
+				isTelemetryUpdated = true;
 			}
-						
+
+			if (isTelemetryUpdated == true)
+			{
+				_watchdog.Enabled = false;
+				_watchdog.Start();
+				_watchdog.Enabled = true;
+				this.IsDroneOnline = true;
+			}			
+		}
+
+		private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+		{
+			this.IsDroneOnline = false;
 		}
 
 		/// <summary>
@@ -102,6 +123,25 @@ namespace Interop.Modules.Telemetry.ViewModels
 			set
 			{
 				if (SetProperty(ref _droneAltitude, value))
+				{
+					//this.OnPropertyChanged(() => this.);
+				}
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		bool _isDroneOnline = false;
+		public bool IsDroneOnline
+		{
+			get
+			{
+				return _isDroneOnline;
+			}
+			set
+			{
+				if (SetProperty(ref _isDroneOnline, value))
 				{
 					//this.OnPropertyChanged(() => this.);
 				}

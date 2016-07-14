@@ -9,6 +9,7 @@ using System.ServiceModel;
 using System.Text;
 
 using Prism.Events;
+using System.Threading.Tasks;
 
 namespace Interop.Modules.Client.Server
 {
@@ -35,7 +36,7 @@ namespace Interop.Modules.Client.Server
         {
             //throw new NotImplementedException();
             var response = new Response();
-            
+
             switch (tInfo.Operation)
             {
                 case InteropTargetMessage.OperationsTypes.TEST:
@@ -45,15 +46,37 @@ namespace Interop.Modules.Client.Server
                     }
                 case InteropTargetMessage.OperationsTypes.NEW:
                     {
+                        Task<bool> waitTask;
+
                         _eventAggregator.GetEvent<SetTargetIdEvent>().Subscribe(delegate (int id)
                         {
                             response.Message = id.ToString();
+
                             Console.WriteLine(id.ToString());
                         });
 
-                        _eventAggregator.GetEvent<PostTargetEvent>().Publish(tInfo);
 
-                        response.Message = "TARGET ADDED";
+
+                        waitTask = Task.Run(() =>
+                        {
+                            try
+                            {
+                                _eventAggregator.GetEvent<PostTargetEvent>().Publish(tInfo);
+                                while (response.Message == null) ;
+
+                                return true;
+                            }
+                            catch (AggregateException ae)
+                            {
+                                //Console.WriteLine("One or more exceptions occurred: ");
+                                //foreach (var ex in ae.Flatten().InnerExceptions)
+                                //    Console.WriteLine("   {0}", ex.Message);
+                                return false;
+                            }
+                        });
+
+                        waitTask.Wait();
+                        //response.Message = "TARGET ADDED";
                         break;
                     }
 
@@ -67,7 +90,7 @@ namespace Interop.Modules.Client.Server
                 case InteropTargetMessage.OperationsTypes.EDIT:
                     {
                         _eventAggregator.GetEvent<PutTargetEvent>().Publish(tInfo);
-                        
+                        response.Message = "TARGET EDITED";
                         break;
                     }
                 default:
@@ -77,6 +100,7 @@ namespace Interop.Modules.Client.Server
                     }                    
             }
             
+
             return response;            
         }
     }

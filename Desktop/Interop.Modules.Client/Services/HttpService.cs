@@ -13,6 +13,7 @@ using System.Configuration;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -47,23 +48,26 @@ namespace Interop.Modules.Client.Services
             PASS = appSettings["PASSWORD"];
             HOST = appSettings["INTEROP_HOST"];
             REFRESH_RATE = appSettings["REFRESH_RATE"];
-
+                        
             //if (true == Login())
             do
             {
-                bw.WorkerSupportsCancellation = true;
-                bw.WorkerReportsProgress = true;
-
-                bw.DoWork += Bw_DoWork;
-                bw.RunWorkerAsync();
-
-                _eventAggregator.GetEvent<UpdateLoginStatusEvent>().Publish(string.Format("Connected as {0}", USER));
-
-                _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(TryPostDroneTelemetry, true);
-                _eventAggregator.GetEvent<PostTargetEvent>().Subscribe(TryPostTarget, true);
-                _eventAggregator.GetEvent<PutTargetEvent>().Subscribe(TryUpdateTarget, true);
-                _eventAggregator.GetEvent<DeleteTargetEvent>().Subscribe(TryDeleteTarget, true);
             } while (true != Login());
+
+
+            bw.WorkerSupportsCancellation = true;
+            bw.WorkerReportsProgress = true;
+
+            bw.DoWork += Bw_DoWork;
+            bw.RunWorkerAsync();
+
+            _eventAggregator.GetEvent<UpdateLoginStatusEvent>().Publish(string.Format("Connected as {0}", USER));
+
+            _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(TryPostDroneTelemetry, true);
+            _eventAggregator.GetEvent<PostTargetEvent>().Subscribe(TryPostTarget, true);
+            _eventAggregator.GetEvent<PutTargetEvent>().Subscribe(TryUpdateTarget, true);
+            _eventAggregator.GetEvent<DeleteTargetEvent>().Subscribe(TryDeleteTarget, true);
+            
         }
 
         //TODO: Clean this method when the tests are done.
@@ -149,6 +153,7 @@ namespace Interop.Modules.Client.Services
                         try
                         {
                             Task<bool> temp = LoadImages(targetsTask.Result);
+                            
                             return temp.Result;
                         }
                         catch (AggregateException ae)
@@ -189,7 +194,11 @@ namespace Interop.Modules.Client.Services
                 //Console.WriteLine(obstaclesTask.Result);
 
                 // You can decrease the value to get faster refresh
-                Thread.Sleep(Int32.Parse(REFRESH_RATE));
+                if (REFRESH_RATE !=string.Empty)
+                {
+                    
+                    Thread.Sleep(Int32.Parse(REFRESH_RATE));
+                }
             }
         }
 
@@ -216,68 +225,131 @@ namespace Interop.Modules.Client.Services
 
         public bool Login()
         {
-            var baseAddress = new Uri(HOST);
-
-            _cookieContainer = new CookieContainer();
-
-            using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
-
-            using (var client = new HttpClient(handler) { BaseAddress = baseAddress })
+            try
             {
-                var content = new FormUrlEncodedContent(new[]
+                var baseAddress = new Uri(HOST);
+
+                _cookieContainer = new CookieContainer();
+
+                using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })
+
+                using (var client = new HttpClient(handler) { BaseAddress = baseAddress })
                 {
+                    var content = new FormUrlEncodedContent(new[]
+                    {
                     new KeyValuePair<string, string>("username", USER),
                     new KeyValuePair<string, string>("password", PASS),
                 });
-                _cookieContainer.Add(baseAddress, new Cookie("CookieName", "cookie_value"));
-                var result = client.PostAsync("/api/login", content).Result;
-                result.EnsureSuccessStatusCode();
-                return result.IsSuccessStatusCode;
+                    _cookieContainer.Add(baseAddress, new Cookie("CookieName", "cookie_value"));
+                    var result = client.PostAsync("/api/login", content).Result;
+                    result.EnsureSuccessStatusCode();
+                    return result.IsSuccessStatusCode;
+                }
+
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+        }
+
+        private Task ExceptionHandler(Exception ex)
+        {
+            Console.WriteLine(ex);
+            return Task.FromResult(true);
         }
 
         public async void TryPostDroneTelemetry(DroneTelemetry droneTelemetry)
         {
             bool isPosted = false;
+            ExceptionDispatchInfo capturedException = null;
 
             if (this._cookieContainer != null && droneTelemetry.GlobalPositionInt != null)
             {
-                isPosted = await PostDroneTelemetry(droneTelemetry);
+                try
+                {
+                    isPosted = await PostDroneTelemetry(droneTelemetry);
+                }
+                catch (Exception ex)
+                {
+                    capturedException = ExceptionDispatchInfo.Capture(ex);
+                }
+
+                if (capturedException != null)
+                {
+                    await ExceptionHandler(capturedException.SourceException);
+                }
             }
-            Console.WriteLine(isPosted.ToString());
         }
 
         public async void TryPostTarget(InteropTargetMessage interopTargetMessage)
         {
             bool isTargetPosted = false;
+            ExceptionDispatchInfo capturedException = null;
 
-            if (interopTargetMessage != null)
+            try
             {
-                isTargetPosted = await PostTarget(interopTargetMessage);
+                if (interopTargetMessage != null)
+                {
+                    isTargetPosted = await PostTarget(interopTargetMessage);
+                }
             }
-            Console.WriteLine(isTargetPosted.ToString());
+            catch (Exception ex)
+            {
+                capturedException = ExceptionDispatchInfo.Capture(ex);
+            }
+
+            if (capturedException != null)
+            {
+                await ExceptionHandler(capturedException.SourceException);
+            }
         }
 
         public async void TryUpdateTarget(InteropTargetMessage interopTargetMessage)
-        {
+        {            
             bool isTargetUpdated = false;
+            ExceptionDispatchInfo capturedException = null;
 
-            if (interopTargetMessage != null)
+            try
             {
-                isTargetUpdated = await PutTarget(interopTargetMessage);
+                if (interopTargetMessage != null)
+                {
+                    isTargetUpdated = await PutTarget(interopTargetMessage);
+                }
             }
-            Console.WriteLine(isTargetUpdated.ToString());
+            catch (Exception ex)
+            {
+                capturedException = ExceptionDispatchInfo.Capture(ex);
+            }
+
+            if (capturedException != null)
+            {
+                await ExceptionHandler(capturedException.SourceException);
+            }
         }
 
         public async void TryDeleteTarget(int interopId)
         {
             bool isTargetDeleted = false;
+            ExceptionDispatchInfo capturedException = null;
 
-            if (interopId > -1)
+            try
             {
-                isTargetDeleted = await DeleteTarget(interopId);
+                if (interopId > -1)
+                {
+                    isTargetDeleted = await DeleteTarget(interopId);
+                }
             }
-            Console.WriteLine(isTargetDeleted.ToString());
+            catch (Exception ex)
+            {
+                capturedException = ExceptionDispatchInfo.Capture(ex);
+            }
+
+            if (capturedException != null)
+            {
+                await ExceptionHandler(capturedException.SourceException);
+            }
         }
 
         public async Task<byte[]> LoadImage(int Id)
@@ -335,7 +407,7 @@ namespace Interop.Modules.Client.Services
                     new KeyValuePair<string, string>("latitude", droneTelemetry.Latitutde.ToString()),
                     new KeyValuePair<string, string>("longitude", droneTelemetry.Longitude.ToString()),
                     new KeyValuePair<string, string>("altitude_msl", droneTelemetry.AltitudeMSL.ToString()),
-                    new KeyValuePair<string, string>("uas_heading", droneTelemetry.AltitudeMSL.ToString()),
+                    new KeyValuePair<string, string>("uas_heading", droneTelemetry.Heading.ToString()),
                 });
 
                 var result = (await client.PostAsync("/api/telemetry", content));
@@ -412,7 +484,8 @@ namespace Interop.Modules.Client.Services
                 newTarget.background_color = interopMessage.BackgroundColor.ToString();
                 newTarget.alphanumeric_color = interopMessage.ForegroundColor.ToString();
                 newTarget.alphanumeric = interopMessage.Character.ToString();
-
+                newTarget.description = interopMessage.Description.ToString();
+                
                 var result = await client.PutAsync($"/api/targets/{interopMessage.InteropID}", new StringContent(JsonConvert.SerializeObject(newTarget)));
                 result.EnsureSuccessStatusCode();
                 return result.IsSuccessStatusCode;
