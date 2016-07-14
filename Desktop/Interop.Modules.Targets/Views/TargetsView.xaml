@@ -31,6 +31,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -61,6 +62,7 @@
             <TextBox Grid.Row="9"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.autonomous}"/>
             <TextBox Grid.Row="10"  Grid.Column="1" BorderBrush="Lime" Background="Black" Foreground="Lime" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.description}"/>
             <Image   Grid.Row="11"  Grid.ColumnSpan="2" Height="Auto" Width="Auto" Margin="10"  HorizontalAlignment="Left" VerticalAlignment="Top" Source="{Binding DisplayedImage}"/>
+            <Button Grid.Row="12" Grid.ColumnSpan="2" Height="Auto" Width="Auto" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Bottom" Content="Delete Image" Command="{Binding Path=DeleteTargetCommand}"/>
         </Grid>
     </DockPanel>
 </UserControl>
