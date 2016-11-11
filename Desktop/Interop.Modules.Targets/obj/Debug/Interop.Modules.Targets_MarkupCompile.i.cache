@@ -4,7 +4,7 @@
 library
 C#
 .cs
-C:\Users\xawtor\Source\Repos\Interop-Application\Desktop\Interop.Modules.Targets\obj\Debug\
+C:\MyProjects\Interop-Application\Desktop\Interop.Modules.Targets\obj\Debug\
 Interop.Modules.Targets
 none
 false
@@ -13,8 +13,8 @@ DEBUG;TRACE
 1-1329125888
 
 101521795866
-681060572441
+681780084176
 Views\TargetsView.xaml;
 
-False
+True
 

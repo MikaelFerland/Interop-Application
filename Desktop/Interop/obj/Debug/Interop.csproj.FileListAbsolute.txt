@@ -353,3 +353,6 @@ C:\Users\xawtor\Source\Repos\Interop-Application\Desktop\Interop\obj\Debug\Inter
 C:\Users\xawtor\Source\Repos\Interop-Application\Desktop\Interop\obj\Debug\Interop.csproj.GenerateResource.Cache
 C:\Users\xawtor\Source\Repos\Interop-Application\Desktop\Interop\obj\Debug\Interop.exe
 C:\Users\xawtor\Source\Repos\Interop-Application\Desktop\Interop\obj\Debug\Interop.pdb
+C:\MyProjects\Interop-Application\Desktop\Interop\bin\Debug\Interop.exe.config
+C:\MyProjects\Interop-Application\Desktop\Interop\obj\Debug\Interop.exe
+C:\MyProjects\Interop-Application\Desktop\Interop\obj\Debug\Interop.pdb
