@@ -167,7 +167,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>copy "$(ProjectDir)geoFence.data" "$(ProjectDir)$(OutDir)"
+    <PreBuildEvent>nuget restore
+copy "$(ProjectDir)geoFence.data" "$(ProjectDir)$(OutDir)"
 copy "$(ProjectDir)area.data" "$(ProjectDir)$(OutDir)"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
