@@ -149,10 +149,6 @@
       <Project>{7825c586-b735-493b-9eb5-b89ecc53b466}</Project>
       <Name>Interop.Modules.Obstacles</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Interop.Modules.Server\Interop.Modules.Server.csproj">
-      <Project>{ebab99c0-a23c-4dcf-9269-5ce4e813dc35}</Project>
-      <Name>Interop.Modules.Server</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Interop.Modules.Targets\Interop.Modules.Targets.csproj">
       <Project>{f4d76ef1-d9f8-493c-8f7a-b12ea92f5cbb}</Project>
       <Name>Interop.Modules.Targets</Name>

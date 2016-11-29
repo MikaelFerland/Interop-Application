@@ -70,7 +70,6 @@
     <Compile Include="Events\SetTargetIdEvent.cs" />
     <Compile Include="Events\UpdateLoginStatusEvent.cs" />
     <Compile Include="Events\UpdateObstaclesEvent.cs" />
-    <Compile Include="Events\UpdateServerInfoEvent.cs" />
     <Compile Include="Events\UpdateTargetsEvent.cs" />
     <Compile Include="Events\UpdateTelemetry.cs" />
     <Compile Include="Interfaces\IHttpService.cs" />
@@ -81,7 +80,6 @@
     <Compile Include="Interfaces\IView.cs" />
     <Compile Include="Models\DroneTelemetry.cs" />
     <Compile Include="Models\Obstacles.cs" />
-    <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="Models\Target.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

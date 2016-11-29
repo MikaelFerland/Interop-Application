@@ -28,7 +28,7 @@ namespace Interop.Modules.Client.Services
         string HOST = "http://mikaelferland.com:80/";
         string REFRESH_RATE = "500";
 
-        static object[] REQUESTS = { new GetServerInfo(), new GetTargets(), new GetObstacles() };
+        static object[] REQUESTS = {new GetTargets(), new GetObstacles() };
         ConcurrentDictionary<int, byte[]> _listOfImages = new ConcurrentDictionary<int, byte[]>();
         BackgroundWorker bw = new BackgroundWorker();
 
@@ -76,28 +76,12 @@ namespace Interop.Modules.Client.Services
             //TODO: Latency monitoring, handle timeout if server is down.            
             while (!(sender as BackgroundWorker).CancellationPending)
             {
-                Task<ServerInfo> serverInfoTask;
                 Task<List<Target>> targetsTask;
                 Task<Obstacles> obstaclesTask;
                 Task<bool> isImagesLoaded;
 
                 try
                 {
-                    serverInfoTask = Task.Run(() =>
-                    {
-                        try
-                        {
-                            Task<ServerInfo> temp = RunAsync<ServerInfo>((IRequest)REQUESTS[0]);
-                            return temp.Result;
-                        }
-                        catch (AggregateException ae)
-                        {
-                            //Console.WriteLine("One or more exceptions occurred: ");
-                            //foreach (var ex in ae.Flatten().InnerExceptions)
-                            //    Console.WriteLine("   {0}", ex.Message);
-                            return null;
-                        }
-                    });
 
                     targetsTask = Task.Run(() =>
                     {
@@ -171,12 +155,9 @@ namespace Interop.Modules.Client.Services
                     //
                     //Task<bool> isImagesLoaded = Task.Run(() => LoadImages(targetsTask.Result));
 
-                    serverInfoTask.Wait();
                     targetsTask.Wait();
                     obstaclesTask.Wait();
 
-                    if (serverInfoTask?.Result != null)
-                        _eventAggregator.GetEvent<UpdateServerInfoEvent>().Publish(serverInfoTask.Result);
                     if (targetsTask?.Result != null)
                         _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(targetsTask.Result);
                     if (obstaclesTask?.Result != null)

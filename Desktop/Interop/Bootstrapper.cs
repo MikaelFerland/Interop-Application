@@ -7,7 +7,6 @@ using Prism.Modularity;
 using Interop.Modules.Client;
 using Interop.Modules.Login;
 using Interop.Modules.Obstacles;
-using Interop.Modules.Server;
 using Interop.Modules.Targets;
 using Interop.Modules.Telemetry;
 
@@ -32,7 +31,6 @@ namespace Interop
             catalog.AddModule(typeof(ClientModule));
             catalog.AddModule(typeof(LoginModule));
             catalog.AddModule(typeof(ObstaclesModule));
-            catalog.AddModule(typeof(ServerModule));
             catalog.AddModule(typeof(TargetsModule));
             catalog.AddModule(typeof(TelemetryModule));
         }       

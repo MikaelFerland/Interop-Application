@@ -20,7 +20,7 @@
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
             <StatusBarItem Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" >
-                <ContentControl prism:RegionManager.RegionName="ServerMessagesRegion" />
+                <ContentControl prism:RegionManager.RegionName="StatusRegion" />
             </StatusBarItem>
             <Separator Grid.Column="1" />
             <StatusBarItem Grid.Column="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">

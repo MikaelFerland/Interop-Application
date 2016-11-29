@@ -101,7 +101,6 @@
     </Compile>
     <Compile Include="Requests\GetDynamicObstacles.cs" />
     <Compile Include="Requests\GetObstacles.cs" />
-    <Compile Include="Requests\GetServerInfo.cs" />
     <Compile Include="Requests\GetStaticObstacles.cs" />
     <Compile Include="Requests\GetTargets.cs" />
     <Compile Include="Services\HttpService.cs" />
