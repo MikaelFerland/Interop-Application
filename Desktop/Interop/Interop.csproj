@@ -134,20 +134,22 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Interop.Modules.Client\Interop.Modules.Client.csproj">
-      <Project>{ab8b448c-dd74-4d60-a041-3e5d03a32180}</Project>
-      <Name>Interop.Modules.Client</Name>
+    <ProjectReference Include="..\Interop.Infrastructure\Interop.Infrastructure.csproj">
+      <Project>{097d108e-2024-492c-a69b-76792e63c08e}</Project>
+      <Name>Interop.Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\Interop.Modules.Login\Interop.Modules.Login.csproj">
       <Project>{0c2060d6-4c61-4377-bbdc-1b2dafed83f1}</Project>
       <Name>Interop.Modules.Login</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Interop.Modules.Obstacles\Interop.Modules.Obstacles.csproj">
+    <ProjectReference Include="..\Interop.Modules.Obstacles\Interop.Modules.Map.csproj">
       <Project>{7825c586-b735-493b-9eb5-b89ecc53b466}</Project>
-      <Name>Interop.Modules.Obstacles</Name>
+      <Name>Interop.Modules.Map</Name>
     </ProjectReference>
     <ProjectReference Include="..\Interop.Modules.Targets\Interop.Modules.Targets.csproj">
       <Project>{f4d76ef1-d9f8-493c-8f7a-b12ea92f5cbb}</Project>

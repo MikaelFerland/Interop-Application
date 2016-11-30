@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Interop.Modules.Obstacles.Properties
+namespace Interop.Modules.Map.Properties
 {
 
 

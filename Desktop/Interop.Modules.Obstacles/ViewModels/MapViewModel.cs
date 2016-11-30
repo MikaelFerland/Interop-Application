@@ -13,18 +13,19 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Interop.Modules.Obstacles.ViewModels
+namespace Interop.Modules.Map.ViewModels
 {
-    public class ObstaclesViewModel : BindableBase
+    public class MapViewModel : BindableBase
     {
         IEventAggregator _eventAggregator;
+        IHttpService _httpService;
         Views.Map _map;
-        Views.ObstaclesView _view;
+        Views.MapView _view;
         List<PointLatLng> _polygonPointsLatLng = new List<PointLatLng>();
         List<PointLatLng> _area = new List<PointLatLng>();
         List<Target> _targets;
 
-        public ObstaclesViewModel(IEventAggregator eventAggregator, IView view)
+        public MapViewModel(IEventAggregator eventAggregator, IHttpService httpService, IView view)
         {
             if (eventAggregator == null)
             {
@@ -37,7 +38,8 @@ namespace Interop.Modules.Obstacles.ViewModels
             }
 
             _eventAggregator = eventAggregator;
-            _view = (view as Views.ObstaclesView);
+            _httpService = httpService;
+            _view = (view as Views.MapView);
             _map = _view.Map;
                         
             _eventAggregator.GetEvent<UpdateObstaclesEvent>().Subscribe(Update_Obstacles);

@@ -87,7 +87,7 @@ namespace Interop.Modules.Client.Services
                     {
                         try
                         {
-                            Task<List<Target>> temp = RunAsync<List<Target>>((IRequest)REQUESTS[1]);
+                            Task<List<Target>> temp = RunAsync<List<Target>>((IRequest)REQUESTS[0]);
                             return temp.Result;
                         }
                         catch (AggregateException ae)
@@ -103,7 +103,7 @@ namespace Interop.Modules.Client.Services
                     {
                         try
                         {
-                            Task<Obstacles> temp = RunAsync<Obstacles>((IRequest)REQUESTS[2]);
+                            Task<Obstacles> temp = RunAsync<Obstacles>((IRequest)REQUESTS[1]);
                             return temp.Result;
                         }
                         catch (AggregateException ae)
@@ -113,23 +113,6 @@ namespace Interop.Modules.Client.Services
                             //    Console.WriteLine("   {0}", ex.Message);
                             return null;
                         }
-                    });
-
-                    obstaclesTask = Task.Run(() =>
-                    {
-                        try
-                        {
-                            Task<Obstacles> temp = RunAsync<Obstacles>((IRequest)REQUESTS[2]);
-                            return temp.Result;
-                        }
-                        catch (AggregateException ae)
-                        {
-                            //Console.WriteLine("One or more exceptions occurred: ");
-                            //foreach (var ex in ae.Flatten().InnerExceptions)
-                            //    Console.WriteLine("   {0}", ex.Message);
-                            return null;
-                        }
-
                     });
 
                     isImagesLoaded = Task.Run(() =>
@@ -176,8 +159,7 @@ namespace Interop.Modules.Client.Services
 
                 // You can decrease the value to get faster refresh
                 if (REFRESH_RATE !=string.Empty)
-                {
-                    
+                {                    
                     Thread.Sleep(Int32.Parse(REFRESH_RATE));
                 }
             }

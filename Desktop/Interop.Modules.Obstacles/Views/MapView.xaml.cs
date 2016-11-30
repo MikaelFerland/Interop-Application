@@ -1,35 +1,27 @@
-﻿using Prism.Events;
+﻿using GMap.NET.WindowsPresentation;
+using Interop.Infrastructure.Interfaces;
+
+using Prism.Events;
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-using GMap.NET.WindowsPresentation;
-using System.Globalization;
-
-namespace Interop.Modules.Obstacles.Views
+namespace Interop.Modules.Map.Views
 {
     /// <summary>
     /// Interaction logic for ObstaclesView.xaml
     /// </summary>
-    public partial class ObstaclesView : UserControl, Infrastructure.Interfaces.IView
+    public partial class MapView : UserControl, Infrastructure.Interfaces.IView
     {
         
-        public ObstaclesView(IEventAggregator eventAggregator)
+        public MapView(IEventAggregator eventAggregator, IHttpService httpService)
         {
             InitializeComponent();
             this.Map.Zoom = 5;
-            DataContext = new ViewModels.ObstaclesViewModel(eventAggregator, this);
+            DataContext = new ViewModels.MapViewModel(eventAggregator, httpService, this);
         }
     }
 

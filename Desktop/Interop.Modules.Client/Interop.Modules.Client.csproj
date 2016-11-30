@@ -99,14 +99,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Requests\GetDynamicObstacles.cs" />
-    <Compile Include="Requests\GetObstacles.cs" />
-    <Compile Include="Requests\GetStaticObstacles.cs" />
-    <Compile Include="Requests\GetTargets.cs" />
-    <Compile Include="Services\HttpService.cs" />
-    <Compile Include="Server\TargetServer.cs" />
-    <Compile Include="Services\TargetService.cs" />
-    <Compile Include="Services\TelemetryService.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

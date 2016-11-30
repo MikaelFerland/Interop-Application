@@ -4,9 +4,11 @@ using Interop.Views;
 using System.Windows;
 
 using Prism.Modularity;
-using Interop.Modules.Client;
+
+using Interop.Infrastructure.Interfaces;
+
 using Interop.Modules.Login;
-using Interop.Modules.Obstacles;
+using Interop.Modules.Map;
 using Interop.Modules.Targets;
 using Interop.Modules.Telemetry;
 
@@ -28,11 +30,19 @@ namespace Interop
         {
             ModuleCatalog catalog = (ModuleCatalog)ModuleCatalog;
 
-            catalog.AddModule(typeof(ClientModule));
             catalog.AddModule(typeof(LoginModule));
-            catalog.AddModule(typeof(ObstaclesModule));
+            catalog.AddModule(typeof(MapModule));
             catalog.AddModule(typeof(TargetsModule));
             catalog.AddModule(typeof(TelemetryModule));
-        }       
+        }
+
+        protected override void ConfigureContainer()
+        {
+            base.ConfigureContainer();
+            
+            this.RegisterTypeIfMissing(typeof(IHttpService), typeof(Modules.Client.Services.HttpService), true);
+            this.RegisterTypeIfMissing(typeof(ITelemetryService), typeof(Modules.Client.Services.TelemetryService), true);
+            this.RegisterTypeIfMissing(typeof(ITargetService), typeof(Modules.Client.Services.TargetService), true);
+        }
     }
 }

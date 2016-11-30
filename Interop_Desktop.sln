@@ -9,13 +9,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{EFD0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Interop_Common", "Interop_Common", "{48CF7C77-0302-454B-8EAA-1663B975C973}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Modules.Client", "Desktop\Interop.Modules.Client\Interop.Modules.Client.csproj", "{AB8B448C-DD74-4D60-A041-3E5D03A32180}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Infrastructure", "Desktop\Interop.Infrastructure\Interop.Infrastructure.csproj", "{097D108E-2024-492C-A69B-76792E63C08E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Modules.Targets", "Desktop\Interop.Modules.Targets\Interop.Modules.Targets.csproj", "{F4D76EF1-D9F8-493C-8F7A-B12EA92F5CBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Modules.Obstacles", "Desktop\Interop.Modules.Obstacles\Interop.Modules.Obstacles.csproj", "{7825C586-B735-493B-9EB5-B89ECC53B466}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Modules.Map", "Desktop\Interop.Modules.Obstacles\Interop.Modules.Map.csproj", "{7825C586-B735-493B-9EB5-B89ECC53B466}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Modules.Telemetry", "Desktop\Interop.Modules.Telemetry\Interop.Modules.Telemetry.csproj", "{B1AC18F3-4D41-4054-AC64-FAF6271AD868}"
 EndProject
@@ -37,10 +35,6 @@ Global
 		{99C9E82C-C594-446D-AA59-8FFBC43AD226}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99C9E82C-C594-446D-AA59-8FFBC43AD226}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99C9E82C-C594-446D-AA59-8FFBC43AD226}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AB8B448C-DD74-4D60-A041-3E5D03A32180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB8B448C-DD74-4D60-A041-3E5D03A32180}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB8B448C-DD74-4D60-A041-3E5D03A32180}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB8B448C-DD74-4D60-A041-3E5D03A32180}.Release|Any CPU.Build.0 = Release|Any CPU
 		{097D108E-2024-492C-A69B-76792E63C08E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{097D108E-2024-492C-A69B-76792E63C08E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{097D108E-2024-492C-A69B-76792E63C08E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -74,7 +68,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{AB8B448C-DD74-4D60-A041-3E5D03A32180} = {EFD03599-40B4-4D9B-9891-79778E7517B3}
 		{097D108E-2024-492C-A69B-76792E63C08E} = {48CF7C77-0302-454B-8EAA-1663B975C973}
 		{F4D76EF1-D9F8-493C-8F7A-B12EA92F5CBB} = {EFD03599-40B4-4D9B-9891-79778E7517B3}
 		{7825C586-B735-493B-9EB5-B89ECC53B466} = {EFD03599-40B4-4D9B-9891-79778E7517B3}

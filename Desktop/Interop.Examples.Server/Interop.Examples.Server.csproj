@@ -61,10 +61,6 @@
       <Project>{097d108e-2024-492c-a69b-76792e63c08e}</Project>
       <Name>Interop.Infrastructure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Interop.Modules.Client\Interop.Modules.Client.csproj">
-      <Project>{ab8b448c-dd74-4d60-a041-3e5d03a32180}</Project>
-      <Name>Interop.Modules.Client</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
