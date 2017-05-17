@@ -11,13 +11,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Interop_Common", "Interop_C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Infrastructure", "Desktop\Interop.Infrastructure\Interop.Infrastructure.csproj", "{097D108E-2024-492C-A69B-76792E63C08E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Modules.Targets", "Desktop\Interop.Modules.Targets\Interop.Modules.Targets.csproj", "{F4D76EF1-D9F8-493C-8F7A-B12EA92F5CBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Modules.Details", "Desktop\Interop.Modules.Targets\Interop.Modules.Details.csproj", "{F4D76EF1-D9F8-493C-8F7A-B12EA92F5CBB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Modules.Map", "Desktop\Interop.Modules.Obstacles\Interop.Modules.Map.csproj", "{7825C586-B735-493B-9EB5-B89ECC53B466}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Modules.Telemetry", "Desktop\Interop.Modules.Telemetry\Interop.Modules.Telemetry.csproj", "{B1AC18F3-4D41-4054-AC64-FAF6271AD868}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Modules.Login", "Desktop\Interop.Modules.Login\Interop.Modules.Login.csproj", "{0C2060D6-4C61-4377-BBDC-1B2DAFED83F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop.Modules.UserInterface", "Desktop\Interop.Modules.Login\Interop.Modules.UserInterface.csproj", "{0C2060D6-4C61-4377-BBDC-1B2DAFED83F1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{17D8C48A-2C31-41F1-9CC5-5B00109C55CA}"
 EndProject

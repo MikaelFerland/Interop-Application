@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="Interop.Modules.Details.Views.ObstaclesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Interop.Modules.Details.Views"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <DockPanel>
+        <ListView x:Name="lv_obstacles_moving" DockPanel.Dock="Top" Height="125" BorderBrush="Black" Background="White" Foreground="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" ItemsSource="{Binding Obstacles.moving_obstacles}" DisplayMemberPath="Tag">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Alt MSL" DisplayMemberBinding="{Binding Path=altitude_msl}" />
+                    <GridViewColumn Header="Sphere Radius" DisplayMemberBinding="{Binding Path=sphere_radius}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <ListView x:Name="lv_obstacles_stationnary" DockPanel.Dock="Bottom" Height="125" BorderBrush="Black" Background="White" Foreground="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" ItemsSource="{Binding Obstacles.stationary_obstacles}" DisplayMemberPath="Tag">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Alt" DisplayMemberBinding="{Binding Path=cylinder_height}"/>
+                    <GridViewColumn Header="Cylinder Radius" DisplayMemberBinding="{Binding Path=cylinder_radius}"/>
+                </GridView>
+            </ListView.View>        
+        
+        </ListView>
+    </DockPanel>
+</UserControl>

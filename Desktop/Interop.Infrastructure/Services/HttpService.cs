@@ -23,17 +23,22 @@ namespace Interop.Modules.Client.Services
 {
     public class HttpService : IHttpService
     {
-        string USER = "simpleuser";
-        string PASS = "simplepass";
-        string HOST = "http://mikaelferland.com:80/";
+        string USER = "testuser";
+        string PASS = "testpass";
+        string HOST = "http://192.168.99.100:8000";
         string REFRESH_RATE = "500";
 
-        static object[] REQUESTS = {new GetTargets(), new GetObstacles() };
+        bool _isInitialized = false;
+        static object[] REQUESTS =  {new GetTargets(), new GetObstacles(), new GetMissions() };
         ConcurrentDictionary<int, byte[]> _listOfImages = new ConcurrentDictionary<int, byte[]>();
-        BackgroundWorker bw = new BackgroundWorker();
 
         IEventAggregator _eventAggregator;
         CookieContainer _cookieContainer;
+
+        Task<List<Target>> _targetsTask;
+        Task<Obstacles> _obstaclesTask;
+        Task<List<Mission>> _missionsTask;
+        Task<bool> _isImagesLoadedTask;
 
         public HttpService(IEventAggregator eventAggregator)
         {
@@ -43,126 +48,69 @@ namespace Interop.Modules.Client.Services
             }
             _eventAggregator = eventAggregator;
 
-            var appSettings = ConfigurationManager.AppSettings;
-            USER = appSettings["USERNAME"];
-            PASS = appSettings["PASSWORD"];
-            HOST = appSettings["INTEROP_HOST"];
-            REFRESH_RATE = appSettings["REFRESH_RATE"];
+            //var appSettings = ConfigurationManager.AppSettings;
+            //USER = appSettings["USERNAME"];
+            //PASS = appSettings["PASSWORD"];
+            //HOST = appSettings["INTEROP_HOST"];
+            //REFRESH_RATE = appSettings["REFRESH_RATE"];
                         
             //if (true == Login())
-            do
-            {
-            } while (true != Login());
-
-
-            bw.WorkerSupportsCancellation = true;
-            bw.WorkerReportsProgress = true;
-
-            bw.DoWork += Bw_DoWork;
-            bw.RunWorkerAsync();
-
-            _eventAggregator.GetEvent<UpdateLoginStatusEvent>().Publish(string.Format("Connected as {0}", USER));
-
+            //do
+            //{
+            //} while (true != Login());
+            
             _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(TryPostDroneTelemetry, true);
             _eventAggregator.GetEvent<PostTargetEvent>().Subscribe(TryPostTarget, true);
             _eventAggregator.GetEvent<PutTargetEvent>().Subscribe(TryUpdateTarget, true);
             _eventAggregator.GetEvent<DeleteTargetEvent>().Subscribe(TryDeleteTarget, true);
-            
         }
 
         //TODO: Clean this method when the tests are done.
-        private void Bw_DoWork(object sender, DoWorkEventArgs e)
+        public void Run()
         {
-            //TODO: Latency monitoring, handle timeout if server is down.            
-            while (!(sender as BackgroundWorker).CancellationPending)
+            //TODO: Latency monitoring, handle timeout if server is down. 
+                                    
+            try
             {
-                Task<List<Target>> targetsTask;
-                Task<Obstacles> obstaclesTask;
-                Task<bool> isImagesLoaded;
-
-                try
-                {
-
-                    targetsTask = Task.Run(() =>
-                    {
-                        try
-                        {
-                            Task<List<Target>> temp = RunAsync<List<Target>>((IRequest)REQUESTS[0]);
-                            return temp.Result;
-                        }
-                        catch (AggregateException ae)
-                        {
-                            //Console.WriteLine("One or more exceptions occurred: ");
-                            //foreach (var ex in ae.Flatten().InnerExceptions)
-                            //    Console.WriteLine("   {0}", ex.Message);
-                            return null;
-                        }
-                    });
-
-                    obstaclesTask = Task.Run(() =>
-                    {
-                        try
-                        {
-                            Task<Obstacles> temp = RunAsync<Obstacles>((IRequest)REQUESTS[1]);
-                            return temp.Result;
-                        }
-                        catch (AggregateException ae)
-                        {
-                            //Console.WriteLine("One or more exceptions occurred: ");
-                            //foreach (var ex in ae.Flatten().InnerExceptions)
-                            //    Console.WriteLine("   {0}", ex.Message);
-                            return null;
-                        }
-                    });
-
-                    isImagesLoaded = Task.Run(() =>
-                    {
-                        try
-                        {
-                            Task<bool> temp = LoadImages(targetsTask.Result);
-                            
-                            return temp.Result;
-                        }
-                        catch (AggregateException ae)
-                        {
-                            //Console.WriteLine("One or more exceptions occurred: ");
-                            //foreach (var ex in ae.Flatten().InnerExceptions)
-                            //    Console.WriteLine("   {0}", ex.Message);
-                            return false;
-                        }
-                    });
-
-                    //serverInfoTask = Task.Run(() => RunAsync<ServerInfo>((IRequest)REQUESTS[0]).Result);
-                    //targetsTask = Task.Run(() => RunAsync<List<Target>>((IRequest)REQUESTS[1]).Result);
-                    //obstaclesTask = Task.Run(() => RunAsync<Obstacles>((IRequest)REQUESTS[2]).Result);
-                    //
-                    //Task<bool> isImagesLoaded = Task.Run(() => LoadImages(targetsTask.Result));
-
-                    targetsTask.Wait();
-                    obstaclesTask.Wait();
-
-                    if (targetsTask?.Result != null)
-                        _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(targetsTask.Result);
-                    if (obstaclesTask?.Result != null)
-                        _eventAggregator.GetEvent<UpdateObstaclesEvent>().Publish(obstaclesTask.Result);
+                if (!_isInitialized)
+                { 
+                    _targetsTask = RunAsync<List<Target>>((IRequest)REQUESTS[0]);
+                    _obstaclesTask = RunAsync<Obstacles>((IRequest)REQUESTS[1]);
+                    _missionsTask = RunAsync<List<Mission>>((IRequest)REQUESTS[2]);
+                    _isImagesLoadedTask = LoadImages(_targetsTask.Result);
+                    _isInitialized = true;
                 }
-                catch (AggregateException ae)
-                {
-                    //Console.WriteLine("One or more exceptions occurred: ");
-                    //foreach (var ex in ae.Flatten().InnerExceptions)
-                    //    Console.WriteLine("   {0}", ex.Message);
+                
+                if (_targetsTask.IsCompleted)
+                { 
+                    _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(_targetsTask.Result);
+                    _isImagesLoadedTask = LoadImages(_targetsTask.Result);
+                    _targetsTask = RunAsync<List<Target>>((IRequest)REQUESTS[0]);
                 }
 
-                //Console.WriteLine(serverInfoTask.Result.server_time);
-                //Console.WriteLine(targetsTask.Result);
-                //Console.WriteLine(obstaclesTask.Result);
+                if (_obstaclesTask.IsCompleted)
+                {
+                    _eventAggregator.GetEvent<UpdateObstaclesEvent>().Publish(_obstaclesTask.Result);
+                    _obstaclesTask = RunAsync<Obstacles>((IRequest)REQUESTS[1]);
+                }
 
-                // You can decrease the value to get faster refresh
-                if (REFRESH_RATE !=string.Empty)
-                {                    
-                    Thread.Sleep(Int32.Parse(REFRESH_RATE));
+                if (_missionsTask.IsCompleted)
+                { 
+                    _eventAggregator.GetEvent<UpdateMissionEvent>().Publish(_missionsTask.Result);
                 }
             }
+            catch (AggregateException aggEx)
+            {
+                var inners = aggEx.Flatten();
+                Console.WriteLine("   {0}", inners.InnerException);
+            }
+
+            // You can decrease the value to get faster refresh
+            if (REFRESH_RATE !=string.Empty)
+            {
+                Task.Delay(TimeSpan.FromMilliseconds(int.Parse(REFRESH_RATE))).ConfigureAwait(false);
+            }
+            
         }
 
         private async Task<T> RunAsync<T>(IRequest request) where T : class
@@ -180,13 +128,15 @@ namespace Interop.Modules.Client.Services
                 {
                     string output = await response.Content.ReadAsStringAsync();
                     request.Data = JsonConvert.DeserializeObject<T>(output);
+                   
                     return request.Data as T;
                 }
             }
+
             return null;
         }
 
-        public bool Login()
+        public bool Login(string username, string password)
         {
             try
             {
@@ -200,8 +150,8 @@ namespace Interop.Modules.Client.Services
                 {
                     var content = new FormUrlEncodedContent(new[]
                     {
-                    new KeyValuePair<string, string>("username", USER),
-                    new KeyValuePair<string, string>("password", PASS),
+                    new KeyValuePair<string, string>("username", username),
+                    new KeyValuePair<string, string>("password", password),
                 });
                     _cookieContainer.Add(baseAddress, new Cookie("CookieName", "cookie_value"));
                     var result = client.PostAsync("/api/login", content).Result;
@@ -329,8 +279,6 @@ namespace Interop.Modules.Client.Services
 
                 using (var response = await client.GetAsync($"/api/targets/{Id}/image"))
                 {
-                    response.EnsureSuccessStatusCode();
-
                     if (response.IsSuccessStatusCode == true)
                     {
                         byte[] inputStream = await response.Content.ReadAsByteArrayAsync();

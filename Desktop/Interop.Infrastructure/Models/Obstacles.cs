@@ -15,6 +15,12 @@ namespace Interop.Infrastructure.Models
         public double cylinder_radius { get; set; } //"cylinder_radius": 300.0,
         public double latitude { get; set; }        //"latitude": 38.140578,
         public double longitude { get; set; }       //"longitude": -76.428997
+
+        public string Tag
+        {
+            get { return $"{cylinder_height} : {cylinder_radius}"; }
+
+        }
     }
 
     //moving_obstacles
@@ -24,5 +30,10 @@ namespace Interop.Infrastructure.Models
         public double latitude { get; set; }      //"latitude": 38.141826869853645,
         public double longitude { get; set; }     //"longitude": -76.43199876559223,
         public double sphere_radius { get; set; } //"sphere_radius": 150.0
+
+        public string Tag
+        {
+            get { return $"{altitude_msl} : {sphere_radius}"; }
+        }
     }
 }

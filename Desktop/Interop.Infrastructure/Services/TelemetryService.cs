@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
+using System.Threading.Tasks;
 namespace Interop.Modules.Client.Services
 {
     public class TelemetryService : ITelemetryService
@@ -29,38 +30,36 @@ namespace Interop.Modules.Client.Services
             _eventAggregator = eventAggregator;
             _droneTelemetry = new DroneTelemetry();
 
-            _bw.WorkerSupportsCancellation = true;
-            _bw.WorkerReportsProgress = true;
-
-            _bw.DoWork += Bw_DoWork;
-            _bw.RunWorkerAsync();
+            Task.Run(async () =>
+            {
+                await ReceiveTelemetryAsync();
+            });
         }
 
-        private void Bw_DoWork(object sender, DoWorkEventArgs e)
+        private async Task ReceiveTelemetryAsync()
         {
-            while (!(sender as BackgroundWorker).CancellationPending)
+            if (_udpClient == null)
             {
-                if (_udpClient == null)
-                {
-                    _udpClient = new UdpClient();
-                }
-                 
+                _udpClient = new UdpClient();
+            }
+
+            IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 5005);
+            _udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            _udpClient.Client.Bind(RemoteIpEndPoint);
+
+            while (true)
+            {                                 
                 try
                 {
-                    IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 5005);
-
-                    if (_udpClient.Client.IsBound == false)
+                    if (_udpClient.Client.Connected)
                     {
-                        _udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                        _udpClient.Client.Bind(RemoteIpEndPoint);
-                    }
+                        // Blocks until a message returns on this socket from a remote host.
+                        UdpReceiveResult results = await _udpClient.ReceiveAsync();
+                        Byte[] receiveBytes = results.Buffer;
+                        string mavlinkData = Encoding.ASCII.GetString(receiveBytes);
 
-                    // Blocks until a message returns on this socket from a remote host.
-                    Byte[] receiveBytes = _udpClient.Receive(ref RemoteIpEndPoint);
-                    string mavlinkData = Encoding.ASCII.GetString(receiveBytes);
-
-                    int mavlinkId = FindMavlinkId(mavlinkData);
-                    RaiseMavlinkEvent(mavlinkId, mavlinkData);
+                        int mavlinkId = FindMavlinkId(mavlinkData);
+                        RaiseMavlinkEvent(mavlinkId, mavlinkData);
 
                         // Uses the IPEndPoint object to determine which of these two hosts responded.
                         //Console.WriteLine("This is the message you received " +
@@ -69,7 +68,7 @@ namespace Interop.Modules.Client.Services
                         //                            RemoteIpEndPoint.Address.ToString() +
                         //                            " on their port number " +
                         //                            RemoteIpEndPoint.Port.ToString());                    
-
+                    }
                 }
                 catch (Exception ex)
                 {

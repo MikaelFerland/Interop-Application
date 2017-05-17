@@ -13,9 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using Interop.Modules.Targets.ViewModels;
+using Interop.Modules.Details.ViewModels;
 
-namespace Interop.Modules.Targets.Views
+namespace Interop.Modules.Details.Views
 {
     /// <summary>
     /// Interaction logic for TargetsView.xaml

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Interop.Infrastructure.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,11 +17,11 @@ using System.Windows.Shapes;
 namespace Interop.Modules.UserInterface.Views
 {
     /// <summary>
-    /// Interaction logic for SessionStatusView.xaml
+    /// Interaction logic for MenuView.xaml
     /// </summary>
-    public partial class SessionStatusView : UserControl
+    public partial class MenuView : UserControl
     {
-        public SessionStatusView()
+        public MenuView()
         {
             InitializeComponent();
         }

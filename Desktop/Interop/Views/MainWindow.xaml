@@ -5,9 +5,16 @@
         prism:ViewModelLocator.AutoWireViewModel="True"
         Title="{Binding Title}"
         WindowStartupLocation="CenterScreen"
-        WindowState="Maximized" Background="DimGray">
+        WindowState="Maximized" Background="White">
+    
+    <Window.Resources>
+        <Style TargetType="{x:Type TabItem}">
+            <Setter Property="Header" Value="{Binding DataContext.Title}"/>
+        </Style>
+    </Window.Resources>
+    
     <DockPanel LastChildFill="True">
-        <StatusBar DockPanel.Dock="Bottom" Background="DimGray">
+        <StatusBar DockPanel.Dock="Bottom" Background="White">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid>
@@ -27,21 +34,34 @@
                 <ContentControl prism:RegionManager.RegionName="SessionRegion" />
             </StatusBarItem>
         </StatusBar>
-        
+
+        <Grid DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ContentControl Grid.Column="0" Height="30" HorizontalAlignment="Left" prism:RegionManager.RegionName="TelemetryRegion" />
+            <ContentControl Grid.Column="1"  Height="30" HorizontalAlignment="Right" prism:RegionManager.RegionName="MenuRegion" />
+
+        </Grid>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="300"/>                
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="12*"/>
+                <RowDefinition Height="8*"/>
             </Grid.RowDefinitions>
-            
-            <ContentControl Grid.Column="0" Grid.Row="1" prism:RegionManager.RegionName="MapRegion" />
-            <ContentControl Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" prism:RegionManager.RegionName="TelemetryRegion" />
-            <ContentControl Grid.Column="1" Grid.Row="1" prism:RegionManager.RegionName="TargetsRegion" />
+
+            <ContentControl Grid.Column="0" Grid.Row="0" prism:RegionManager.RegionName="MainRegion" />
+
+            <GridSplitter Grid.Column="1" Grid.Row="1" Background="Black" HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="5"/>
+            <TabControl Grid.Column="2" Grid.Row="0" prism:RegionManager.RegionName="DetailsRegion" TabStripPlacement="Bottom" HorizontalAlignment="Stretch" IsSynchronizedWithCurrentItem="True" Background="{x:Null}" >
+
+            </TabControl>
         </Grid>
     </DockPanel>
 </Window>

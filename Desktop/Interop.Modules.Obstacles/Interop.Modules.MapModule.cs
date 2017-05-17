@@ -17,7 +17,7 @@ namespace Interop.Modules.Map
 
         public void Initialize()
         {
-            _regionManager.RegisterViewWithRegion("MapRegion", typeof(MapView));
+            _regionManager.RegisterViewWithRegion("MainRegion", typeof(MapView));
         }
     }
 }

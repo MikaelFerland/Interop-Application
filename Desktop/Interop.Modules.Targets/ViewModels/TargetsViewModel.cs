@@ -14,7 +14,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace Interop.Modules.Targets.ViewModels
+namespace Interop.Modules.Details.ViewModels
 {
     public class TargetsViewModel : BindableBase
     {
@@ -40,12 +40,19 @@ namespace Interop.Modules.Targets.ViewModels
 
             _eventAggregator.GetEvent<UpdateTargetsEvent>().Subscribe(Update_Targets);
         }
-        
+
+        private string _title = "Targets";
+
+        public string Title
+        {
+            get { return _title; }
+        }
+
         public void Update_Targets(List<Target> targets)
         {
             Targets = targets;
 
-            Application.Current.Dispatcher.Invoke((Action)delegate
+            Application.Current?.Dispatcher.Invoke((Action)delegate
             {
                 this.DeleteTargetCommand.RaiseCanExecuteChanged();
             });
@@ -94,7 +101,6 @@ namespace Interop.Modules.Targets.ViewModels
             }
             set
             {
-
                 if (SetProperty(ref _currentTarget, value))
                 {
                     _eventAggregator.GetEvent<TargetImagesEvent>().Subscribe(delegate (ConcurrentDictionary<int, byte[]> dictBytesImage)
@@ -102,8 +108,13 @@ namespace Interop.Modules.Targets.ViewModels
                         if (dictBytesImage.Keys.Contains(CurrentTarget.id))
                         {
                             var currentImage = dictBytesImage[CurrentTarget.id];
+                            var imageConverter = new ImageSourceConverter();
 
-                            DisplayedImage = (BitmapSource)new ImageSourceConverter().ConvertFrom(currentImage);
+                            if (currentImage.Length > 1)
+                            {
+                                var imageSource = imageConverter.ConvertFrom(currentImage);
+                                DisplayedImage = (BitmapSource)imageSource;
+                            }
 
                             //using (var ms = new System.IO.MemoryStream(currentImage))
                             //{

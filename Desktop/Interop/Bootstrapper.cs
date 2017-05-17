@@ -7,9 +7,9 @@ using Prism.Modularity;
 
 using Interop.Infrastructure.Interfaces;
 
-using Interop.Modules.Login;
+using Interop.Modules.UserInterface;
 using Interop.Modules.Map;
-using Interop.Modules.Targets;
+using Interop.Modules.Details;
 using Interop.Modules.Telemetry;
 
 namespace Interop
@@ -30,9 +30,9 @@ namespace Interop
         {
             ModuleCatalog catalog = (ModuleCatalog)ModuleCatalog;
 
-            catalog.AddModule(typeof(LoginModule));
+            catalog.AddModule(typeof(UserInterfaceModule));
             catalog.AddModule(typeof(MapModule));
-            catalog.AddModule(typeof(TargetsModule));
+            catalog.AddModule(typeof(DetailsModule));
             catalog.AddModule(typeof(TelemetryModule));
         }
 

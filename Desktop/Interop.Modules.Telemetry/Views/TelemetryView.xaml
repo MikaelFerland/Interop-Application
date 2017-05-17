@@ -22,14 +22,14 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <Label Grid.Column="0" Foreground="Lime" Content="TELEMETRY" VerticalAlignment="Center" />
+        <Label Grid.Column="0" Foreground="Black" Content="TELEMETRY" VerticalAlignment="Center" />
         <cus:Led Grid.Column="1" Height="20" Foreground="Lime" HorizontalAlignment="Left" VerticalAlignment="Center" IsActive="{Binding IsDroneOnline}"/>
-        <Label Grid.Column="3" Foreground="Lime" VerticalAlignment="Center" Content="GPS "/>
-        <Label Grid.Column="4" Foreground="Lime" VerticalAlignment="Center" Content="{Binding DronePosition}"/>
-        <Label Grid.Column="5" Foreground="Lime" VerticalAlignment="Center" Content="HDG "/>
-        <Label Grid.Column="6" Foreground="Lime" VerticalAlignment="Center" Content="{Binding DroneHeading}"/>
-        <Label Grid.Column="7" Foreground="Lime" VerticalAlignment="Center" Content="ALTITUDE MSL "/>
-        <Label Grid.Column="8" Foreground="Lime" VerticalAlignment="Center" Content="{Binding DroneAltitude}"/>
+        <Label Grid.Column="3" Foreground="Black" VerticalAlignment="Center" Content="GPS "/>
+        <Label Grid.Column="4" Foreground="Black" VerticalAlignment="Center" Content="{Binding DronePosition}"/>
+        <Label Grid.Column="5" Foreground="Black" VerticalAlignment="Center" Content="HDG "/>
+        <Label Grid.Column="6" Foreground="Black" VerticalAlignment="Center" Content="{Binding DroneHeading}"/>
+        <Label Grid.Column="7" Foreground="Black" VerticalAlignment="Center" Content="ALTITUDE MSL "/>
+        <Label Grid.Column="8" Foreground="Black" VerticalAlignment="Center" Content="{Binding DroneAltitude}"/>
     </Grid>
 </UserControl>
     

@@ -13,14 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Interop.Modules.UserInterface.Views
+using Interop.Modules.Details.ViewModels;
+
+namespace Interop.Modules.Details.Views
 {
     /// <summary>
-    /// Interaction logic for SessionStatusView.xaml
+    /// Interaction logic for ObstaclesView.xaml
     /// </summary>
-    public partial class SessionStatusView : UserControl
+    public partial class ObstaclesView : UserControl
     {
-        public SessionStatusView()
+        public ObstaclesView()
         {
             InitializeComponent();
         }

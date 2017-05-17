@@ -4,7 +4,7 @@ using Prism.Events;
 using Prism.Mvvm;
 using System;
 
-namespace Interop.Modules.Login.ViewModels
+namespace Interop.Modules.UserInterface.ViewModels
 {
     public class SessionStatusViewModel : BindableBase
     {

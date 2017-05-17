@@ -2,15 +2,15 @@
 using Prism.Regions;
 using System;
 
-using Interop.Modules.Login.Views;
+using Interop.Modules.UserInterface.Views;
 
-namespace Interop.Modules.Login
+namespace Interop.Modules.UserInterface
 {
-    public class LoginModule : IModule
+    public class UserInterfaceModule : IModule
     {
         IRegionManager _regionManager;
 
-        public LoginModule(RegionManager regionManager)
+        public UserInterfaceModule(RegionManager regionManager)
         {
             _regionManager = regionManager;
         }
@@ -18,6 +18,7 @@ namespace Interop.Modules.Login
         public void Initialize()
         {
             _regionManager.RegisterViewWithRegion("SessionRegion", typeof(SessionStatusView));
+            _regionManager.RegisterViewWithRegion("MenuRegion", typeof(MenuView));
         }
     }
 }

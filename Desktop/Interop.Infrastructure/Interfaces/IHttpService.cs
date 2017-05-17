@@ -2,5 +2,7 @@
 {
     public interface IHttpService
     {
+        bool Login(string usernane, string password);
+        void Run();
     }
 }
