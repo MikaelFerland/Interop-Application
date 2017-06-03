@@ -40,6 +40,8 @@ namespace Interop.Modules.Client.Services
         Task<List<Mission>> _missionsTask;
         Task<bool> _isImagesLoadedTask;
 
+        List<Task> tasks = new List<Task>();
+
         public HttpService(IEventAggregator eventAggregator)
         {
             if (eventAggregator == null)
@@ -65,24 +67,91 @@ namespace Interop.Modules.Client.Services
             _eventAggregator.GetEvent<DeleteTargetEvent>().Subscribe(TryDeleteTarget, true);
         }
 
-        //TODO: Clean this method when the tests are done.
-        public void Run()
+        ////TODO: Clean this method when the tests are done.
+        //public async Task Run()
+        //{
+        //    //TODO: Latency monitoring, handle timeout if server is down. 
+
+        //    try
+        //    {
+        //        if (!_isInitialized)
+        //        {
+        //            //RunAsync<List<Target>>((IRequest)REQUESTS[0]).ContinueWith(ctargetTask =>
+        //            //{
+        //            //    List<Target> listOfTarget = ctargetTask.Result;
+        //            //    _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(listOfTarget);
+        //            //    _isImagesLoadedTask = LoadImages(ctargetTask.Result);
+        //            //    _targetsTask = RunAsync<List<Target>>((IRequest)REQUESTS[0]);
+        //            //});
+
+
+        //            await RunAsync<List<Target>>((IRequest)REQUESTS[0]).ContinueWith(ctargetTask =>
+        //            {
+        //                _isImagesLoadedTask = LoadImages(ctargetTask.Result);
+        //            });
+
+        //            await RunAsync<Obstacles>((IRequest)REQUESTS[1]).ContinueWith(ctargetTask =>
+        //            {
+        //                _eventAggregator.GetEvent<UpdateObstaclesEvent>().Publish(ctargetTask.Result);
+        //            });
+
+        //            await RunAsync<List<Mission>>((IRequest)REQUESTS[2]).ContinueWith(ctargetTask =>
+        //            {
+        //                _eventAggregator.GetEvent<UpdateMissionEvent>().Publish(ctargetTask.Result);
+        //            });
+
+        //            _isInitialized = true;                    
+        //            return;
+        //        }
+
+        //        tasks.Add(RunAsync<List<Target>>((IRequest)REQUESTS[0]).ContinueWith(ctargetTask =>
+        //        {
+        //            _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(ctargetTask.Result);
+        //            _isImagesLoadedTask = LoadImages(ctargetTask.Result);
+        //        }));
+
+        //        tasks.Add(RunAsync<Obstacles>((IRequest)REQUESTS[1]).ContinueWith(ctargetTask =>
+        //        {
+        //            _eventAggregator.GetEvent<UpdateObstaclesEvent>().Publish(ctargetTask.Result);
+        //        }));
+
+        //        await Task.WhenAny(tasks);
+        //        tasks.Clear();
+        //    }
+        //    catch (AggregateException aggEx)
+        //    {
+        //        var inners = aggEx.Flatten();
+        //        Console.WriteLine("   {0}", inners.InnerException);
+        //    }
+
+        //    // You can decrease the value to get faster refresh
+        //    if (REFRESH_RATE !=string.Empty)
+        //    {
+
+        //        await Task.Delay(TimeSpan.FromMilliseconds(int.Parse(REFRESH_RATE))).ConfigureAwait(false);
+        //    }
+
+        //}
+
+        public Task Run()
         {
             //TODO: Latency monitoring, handle timeout if server is down. 
-                                    
+
             try
             {
                 if (!_isInitialized)
-                { 
+                {
                     _targetsTask = RunAsync<List<Target>>((IRequest)REQUESTS[0]);
+
                     _obstaclesTask = RunAsync<Obstacles>((IRequest)REQUESTS[1]);
                     _missionsTask = RunAsync<List<Mission>>((IRequest)REQUESTS[2]);
                     _isImagesLoadedTask = LoadImages(_targetsTask.Result);
                     _isInitialized = true;
+                    return Task.FromResult(true);
                 }
-                
+
                 if (_targetsTask.IsCompleted)
-                { 
+                {
                     _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(_targetsTask.Result);
                     _isImagesLoadedTask = LoadImages(_targetsTask.Result);
                     _targetsTask = RunAsync<List<Target>>((IRequest)REQUESTS[0]);
@@ -95,7 +164,7 @@ namespace Interop.Modules.Client.Services
                 }
 
                 if (_missionsTask.IsCompleted)
-                { 
+                {
                     _eventAggregator.GetEvent<UpdateMissionEvent>().Publish(_missionsTask.Result);
                 }
             }
@@ -106,12 +175,13 @@ namespace Interop.Modules.Client.Services
             }
 
             // You can decrease the value to get faster refresh
-            if (REFRESH_RATE !=string.Empty)
+            if (REFRESH_RATE != string.Empty)
             {
-                Task.Delay(TimeSpan.FromMilliseconds(int.Parse(REFRESH_RATE))).ConfigureAwait(false);
+                Task.Delay(TimeSpan.FromMilliseconds(int.Parse(REFRESH_RATE))).ConfigureAwait(false);                
             }
-            
+            return Task.FromResult(true);
         }
+
 
         private async Task<T> RunAsync<T>(IRequest request) where T : class
         {

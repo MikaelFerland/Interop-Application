@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 using Newtonsoft.Json;
 
@@ -10,89 +6,239 @@ namespace Interop.Infrastructure.Models
 {
     public class Mission
     {
+        public Mission()
+        {
+            
+        }
+
         [JsonProperty("id")]
-        private int id { get; set; } //"id": 1,
+        public int Id { get; set; } //"id": 1,
 
         [JsonProperty("active")]
-        bool active { get; set; } //"active": true,
+        public bool Active { get; set; } //"active": true,
 
         [JsonProperty("air_drop_pos")]
-        air_drop_pos air_drop_pos { get; set; }
+        public AirDropPosition AirDropPosition { get; set; }
 
         [JsonProperty("fly_zones")]
-        List<fly_zones> fly_zones { get; set; }
+        public List<FlyZone> FlyZones { get; set; }
 
         [JsonProperty("home_pos")]
-        home_pos home_pos { get; set; }
+        public HomePosition HomePosition { get; set; }
 
         [JsonProperty("mission_waypoints")]
-        List<mission_waypoints> mission_waypoints { get; set; }
+        public List<Waypoint> Waypoints { get; set; }
 
         [JsonProperty("off_axis_target_pos")]
-        off_axis_target_pos off_axis_target_pos { get; set; }
+        public OffAxisTargetPosition OffAxisTargetPosition { get; set; }
 
         [JsonProperty("emergent_last_known_pos")]
-        emergent_last_known_pos emergent_last_known_pos { get; set; }
+        public EmergentLastKnownPosition EmergentLastKnownPosition { get; set; }
 
         [JsonProperty("search_grid_points")]
-        List<search_grid_points> search_grid_points { get; set; }
+        public List<SearchGridPoint> SearchGridPoints { get; set; }
+
+        public List<BasePoint> GetAllGpsPoints()
+        {
+            var gpsPoints = new List<BasePoint>();
+
+            if (this.HomePosition != null) gpsPoints.Add(this.HomePosition);
+
+            if (this.Waypoints?.Count > 0)
+            {
+                foreach (var waypoint in this.Waypoints)
+                {
+                    gpsPoints.Add(waypoint);
+                }
+            }
+
+            if(this.AirDropPosition != null) gpsPoints.Add(this.AirDropPosition);
+            if(this.EmergentLastKnownPosition != null) gpsPoints.Add(this.EmergentLastKnownPosition);
+            if(this.OffAxisTargetPosition != null) gpsPoints.Add(this.OffAxisTargetPosition);
+
+            if (this.FlyZones?.Count > 0)
+            {
+                foreach (var flyZone in this.FlyZones)
+                {
+                    foreach(var boundaryPoint in flyZone.BoundaryPoints)
+                    {
+                        gpsPoints.Add(boundaryPoint);
+                    }
+                }
+            }
+
+            if (this.SearchGridPoints?.Count > 0)
+            {
+                foreach (var searchGridPoint in this.SearchGridPoints)
+                {
+                    gpsPoints.Add(searchGridPoint);
+                }
+            }
+
+            return gpsPoints;
+        }
+
+
     }
 
-    public class air_drop_pos
+    public class AirDropPosition : BasePoint
     {
-        public double latitude { get; set; } //"latitude": 38.141833,
-        public double longitude { get; set; } //"longitude": -76.425263
+        public override PointType GpsType
+        {
+            get { return PointType.Single; }
+        }
+        public override string Tag
+        {
+            get { return "A"; }
+        }
+        public override string Description
+        {
+            get { return "Air Drop"; }
+        }
+        public override double Latitude { get; set; } //"latitude": 38.141833,
+        public override double Longitude { get; set; } //"longitude": -76.425263
     }
 
-    public class fly_zones
+    public class FlyZone
     {
-        public double altitude_msl_max { get; set; } //"altitude_msl_max": 200.0,
-        public double altitude_msl_min { get; set; } //"altitude_msl_min": 100.0,
+        public PointType GpsType
+        {
+            get { return PointType.Area; }
+        }
+        public double Altitude_msl_max { get; set; } //"altitude_msl_max": 200.0,
+        public double Altitude_msl_min { get; set; } //"altitude_msl_min": 100.0,
 
         [JsonProperty("boundary_pts")]
-        List<boundary_pts> boundary_pts { get; set; }
+        public List<BoundaryPoint> BoundaryPoints { get; set; }
     }
 
-    public class boundary_pts
+    public class BoundaryPoint : BasePoint
     {
-        public double latitude { get; set; } //"latitude": 38.142544,
-        public double longitude { get; set; } //"longitude": -76.434088,
+        public override PointType GpsType
+        {
+            get { return PointType.Area; }
+        }
+        public override string Tag
+        {
+            get { return "B" + Order; }
+        }
+        public override string Description
+        {
+            get { return "Boundary"; }
+        }
+        public override double Latitude { get; set; } //"latitude": 38.142544,
+        public override double Longitude { get; set; } //"longitude": -76.434088,
 
         [JsonProperty("order")]
-        int order { get; set; } //"order": 1
+        public int Order { get; set; } //"order": 1
     }
 
-    public class home_pos
+    public class HomePosition : BasePoint
     {
-        public double latitude { get; set; } //"latitude": 38.14792,
-        public double longitude { get; set; } //"longitude": -76.427995
+        public override PointType GpsType
+        {
+            get { return PointType.Single; }
+        }
+        public override string Tag
+        {
+            get { return "H"; }
+        }
+        public override string Description
+        {
+            get { return "Home"; }
+        }
+        public override double Latitude { get; set; } //"latitude": 38.14792,
+        public override double Longitude { get; set; } //"longitude": -76.427995
     }
 
-    public class mission_waypoints
+    public class Waypoint : BasePoint
     {
-        public double altitude_msl { get; set; } //"altitude_msl": 200.0,
-        public double latitude { get; set; } //"latitude": 38.142544,
-        public double longitude { get; set; } //"longitude": -76.434088,
-        public int order { get; set; } //"order": 1
+        public override PointType GpsType
+        {
+            get { return PointType.Single; }
+        }
+        public override string Tag
+        {
+            get { return "W" + Order; }
+        }
+        public override string Description
+        {
+            get { return "Waypoint"; }
+        }
+        public double Altitude_msl { get; set; } //"altitude_msl": 200.0,
+        public override double Latitude { get; set; } //"latitude": 38.142544,
+        public override double Longitude { get; set; } //"longitude": -76.434088,
+        public int Order { get; set; } //"order": 1
     }
 
-    public class off_axis_target_pos
+    public class OffAxisTargetPosition : BasePoint
     {
-        public double latitude { get; set; } //"latitude": 38.142544,
-        public double longitude { get; set; } //"longitude": -76.434088
+        public override PointType GpsType
+        {
+            get { return PointType.Single; }
+        }
+        public override string Tag
+        {
+            get { return "O"; }
+        }
+        public override string Description
+        {
+            get { return "Off Axis Target"; }
+        }
+        public override double Latitude { get; set; } //"latitude": 38.142544,
+        public override double Longitude { get; set; } //"longitude": -76.434088
     }
 
-    public class emergent_last_known_pos
+    public class EmergentLastKnownPosition : BasePoint
     {
-        public double latitude { get; set; }  //"latitude": 38.145823,
-        public double longitude { get; set; } //"longitude": -76.422396 //"longitude": -76.434088
+        public override PointType GpsType
+        {
+            get { return PointType.Single; }
+        }
+        public override string Tag
+        {
+            get { return "E"; }
+        }
+        public override string Description
+        {
+            get { return "Emergent Last Know"; }
+        }
+        public override double Latitude { get; set; }  //"latitude": 38.145823,
+        public override double Longitude { get; set; } //"longitude": -76.422396 //"longitude": -76.434088
     }
 
-    public class search_grid_points
+    public class SearchGridPoint : BasePoint
     {
-        public double altitude_msl { get; set; } //"altitude_msl": 200.0,
-        public double latitude { get; set; } //"latitude": 38.142544,
-        public double longitude { get; set; } //"longitude": -76.434088,
-        public int order { get; set; } //"order": 1
+        public override PointType GpsType
+        {
+            get { return PointType.Area; }
+        }
+        public override string Tag
+        {
+            get { return "S" + Order; }
+        }
+        public override string Description
+        {
+            get { return "Search Grid"; }
+        }
+        public double Altitude_msl { get; set; } //"altitude_msl": 200.0,
+        public override double Latitude { get; set; } //"latitude": 38.142544,
+        public override double Longitude { get; set; } //"longitude": -76.434088,
+        public int Order { get; set; } //"order": 1
+    }
+
+    public enum PointType
+    {
+        Single,
+        Area
+    }
+
+    public abstract class BasePoint
+    {
+        virtual public PointType GpsType { get; }
+        virtual public string Tag { get; }
+        virtual public string Description { get; }
+        virtual public double Latitude { get; set; }
+        virtual public double Longitude { get; set; }
     }
 }

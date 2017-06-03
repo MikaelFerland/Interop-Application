@@ -24,6 +24,7 @@ namespace Interop.Modules.Map.ViewModels
         List<PointLatLng> _polygonPointsLatLng = new List<PointLatLng>();
         List<PointLatLng> _area = new List<PointLatLng>();
         List<Target> _targets;
+        Mission _currentMission;
 
         public MapViewModel(IEventAggregator eventAggregator, IHttpService httpService, IView view)
         {
@@ -45,9 +46,9 @@ namespace Interop.Modules.Map.ViewModels
             _eventAggregator.GetEvent<UpdateObstaclesEvent>().Subscribe(Update_Obstacles);
             _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(Update_DronePosition);
             _eventAggregator.GetEvent<UpdateTargetsEvent>().Subscribe(Update_TargetsLocation);
-
-            SetGeofence();
-            SetArea();
+            _eventAggregator.GetEvent<UpdateSelectedMission>().Subscribe(Update_SelectedMission);
+            //SetGeofence();
+            //SetArea();
         }
 
         public double scaleDimension(double latitude, double zoomLevel, double mapDimension)
@@ -65,6 +66,25 @@ namespace Interop.Modules.Map.ViewModels
             
             //TODO: Remove the following line when the debug will be finish
             //this.Position = new Point(obstacles.moving_obstacles[0].latitude, obstacles.moving_obstacles[0].longitude);
+        }
+        public void Update_DronePosition(Infrastructure.Models.DroneTelemetry droneTelemetry)
+        {
+            if (droneTelemetry.GlobalPositionInt != null)
+            {
+                this.Position = new Point(droneTelemetry.Latitutde, droneTelemetry.Longitude);
+            }
+        }
+
+        public void Update_TargetsLocation(List<Target> targets)
+        {
+            if (targets != null)
+            {
+                _targets = targets;
+            }
+        }
+        public void Update_SelectedMission(Mission mission)
+        {
+            _currentMission = mission;
         }
 
         public PointLatLng ExtactLatLon(string combinedPoint)
@@ -92,7 +112,7 @@ namespace Interop.Modules.Map.ViewModels
             }
         }
 
-        public void SetGeofence()
+        public void SetGeofenceFromFile()
         {
             
             FetchGeoFencePoints("geoFence", _polygonPointsLatLng);
@@ -115,7 +135,38 @@ namespace Interop.Modules.Map.ViewModels
             _map.Markers.Add(geofence);
         }
 
-        public void SetArea()
+        public void SetGeofenceFromCurrentMission(Mission mission)
+        {
+            if (mission == null) return;
+
+            _polygonPointsLatLng.Clear();
+            foreach (var flyZone in mission.FlyZones)
+            {
+                foreach (var boundaryPoint in flyZone.BoundaryPoints)
+                {
+                    _polygonPointsLatLng.Add(new PointLatLng { Lat=boundaryPoint.Latitude, Lng=boundaryPoint.Longitude });
+                }
+            }
+
+            var geofence = new GMapPolygon(_polygonPointsLatLng);
+
+            var polygon = new System.Windows.Shapes.Path();
+            var strokeBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
+            strokeBrush.Opacity = 1;
+            var fillBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Yellow);
+            fillBrush.Opacity = 0.1;
+
+            polygon.Fill = fillBrush;
+            polygon.Stroke = strokeBrush;
+            polygon.StrokeThickness = 3;
+
+            geofence.Shape = polygon;
+            geofence.RegenerateShape(_map);
+
+            _map.Markers.Add(geofence);
+        }
+
+        public void SetAreaFromFile()
         {
             if (_area?.Count == 0)
             {
@@ -139,7 +190,34 @@ namespace Interop.Modules.Map.ViewModels
 
             _map.Markers.Add(area);
         }
+        public void SetAreaFromCurrentMission(Mission mission)
+        {
+            if (mission == null) return;
 
+            foreach (var searchGridPoint in mission.SearchGridPoints)
+            {
+                var gpsPoint = new PointLatLng { Lat = searchGridPoint.Latitude, Lng = searchGridPoint.Longitude };
+                _area.Add(gpsPoint);
+                AddMarker(searchGridPoint , System.Windows.Media.Brushes.Green);
+            }
+
+            var area = new GMapPolygon(_area);
+
+            var polygon = new System.Windows.Shapes.Path();
+            var strokeBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.DarkBlue);
+            strokeBrush.Opacity = 0.4;
+            var fillBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.DarkBlue);
+            fillBrush.Opacity = 0.4;
+
+            polygon.Fill = fillBrush;
+            polygon.Stroke = strokeBrush;
+            polygon.StrokeThickness = 3;
+
+            area.Shape = polygon;
+            area.RegenerateShape(_map);
+
+            _map.Markers.Add(area);
+        }
         public void SetTargets()
         {
             if (_targets != null && _targets.Count > 0)
@@ -167,9 +245,55 @@ namespace Interop.Modules.Map.ViewModels
 
                     marker.Offset = new Point(-res, -res);
                     marker.Shape = grid;
+                    marker.ZIndex = 1;                    
                     _map.Markers.Add(marker);
                 }                
             }
+        }
+
+        public void SetMission(Mission mission)
+        {
+            if (mission == null) return;
+
+            AddMarker(mission.HomePosition, System.Windows.Media.Brushes.White);
+            AddMarker(mission.AirDropPosition, System.Windows.Media.Brushes.White);
+            AddMarker(mission.OffAxisTargetPosition, System.Windows.Media.Brushes.White);
+            AddMarker(mission.EmergentLastKnownPosition, System.Windows.Media.Brushes.White);
+
+            foreach (var waypoint in mission.Waypoints)
+            {
+                AddMarker(waypoint, System.Windows.Media.Brushes.White);
+            }
+        }
+
+        void AddMarker(BasePoint gpsPoint, System.Windows.Media.Brush color)
+        {
+            var p = new PointLatLng { Lat = gpsPoint.Latitude, Lng = gpsPoint.Longitude };
+            var marker = new GMapMarker(p);
+            var res = scaleDimension(p.Lat, _map.Zoom, 0.3 * 12.0);
+            
+            var grid = new Grid();
+
+            var label = new Label();
+            label.Content = gpsPoint.Tag;
+            label.FontWeight = FontWeights.Bold;
+            label.HorizontalAlignment = HorizontalAlignment.Center;
+            label.VerticalAlignment = VerticalAlignment.Center;
+
+            var shape = new System.Windows.Shapes.Rectangle();
+            shape.Height = label.Height;
+            shape.Width = label.Width;
+            shape.Stroke = color;
+            shape.Opacity = 70;
+            
+
+            grid.Children.Add(shape);
+            grid.Children.Add(label);
+
+            marker.Offset = new Point(-res, -res);
+            marker.Shape = grid;
+            marker.ZIndex = 1;
+            _map.Markers.Add(marker);
         }
 
         public void SetObstacles(Infrastructure.Models.Obstacles obstacles)
@@ -208,6 +332,7 @@ namespace Interop.Modules.Map.ViewModels
 
                             marker.Offset = new Point(-res, -res);
                             marker.Shape = grid;
+                            marker.ZIndex = 0;
                             _map.Markers.Add(marker);
                         }
 
@@ -235,12 +360,16 @@ namespace Interop.Modules.Map.ViewModels
 
                             marker.Offset = new Point(-res, -res);
                             marker.Shape = grid;
+                            marker.ZIndex = 0;
                             _map.Markers.Add(marker);
                         }
 
-                        SetGeofence();
+                        //SetGeofence();
+                        SetGeofenceFromCurrentMission(_currentMission);
+                        SetAreaFromCurrentMission(_currentMission);
                         SetTargets();
-                        SetArea();
+                        SetMission(_currentMission);
+                        //SetArea();
                     });
                 }
                 catch (Exception ex)
@@ -250,21 +379,7 @@ namespace Interop.Modules.Map.ViewModels
             }
         }
 
-        public void Update_DronePosition(Infrastructure.Models.DroneTelemetry droneTelemetry)
-        {   
-            if (droneTelemetry.GlobalPositionInt != null)
-            { 
-                this.Position = new Point(droneTelemetry.Latitutde, droneTelemetry.Longitude);
-            }
-        }
 
-        public void Update_TargetsLocation(List<Target> targets)
-        {
-            if (targets != null)
-            {
-                _targets = targets;
-            }
-        }
 
         /// <summary>
         /// This is the map provider that the control will use

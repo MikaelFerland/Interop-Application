@@ -143,21 +143,21 @@
       <Project>{097d108e-2024-492c-a69b-76792e63c08e}</Project>
       <Name>Interop.Infrastructure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Interop.Modules.Login\Interop.Modules.UserInterface.csproj">
-      <Project>{0c2060d6-4c61-4377-bbdc-1b2dafed83f1}</Project>
-      <Name>Interop.Modules.UserInterface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Interop.Modules.Obstacles\Interop.Modules.Map.csproj">
-      <Project>{7825c586-b735-493b-9eb5-b89ecc53b466}</Project>
-      <Name>Interop.Modules.Map</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Interop.Modules.Targets\Interop.Modules.Details.csproj">
+    <ProjectReference Include="..\Interop.Modules.Details\Interop.Modules.Details.csproj">
       <Project>{f4d76ef1-d9f8-493c-8f7a-b12ea92f5cbb}</Project>
       <Name>Interop.Modules.Details</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Interop.Modules.Map\Interop.Modules.Map.csproj">
+      <Project>{7825c586-b735-493b-9eb5-b89ecc53b466}</Project>
+      <Name>Interop.Modules.Map</Name>
     </ProjectReference>
     <ProjectReference Include="..\Interop.Modules.Telemetry\Interop.Modules.Telemetry.csproj">
       <Project>{b1ac18f3-4d41-4054-ac64-faf6271ad868}</Project>
       <Name>Interop.Modules.Telemetry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Interop.Modules.UserInterface\Interop.Modules.UserInterface.csproj">
+      <Project>{0c2060d6-4c61-4377-bbdc-1b2dafed83f1}</Project>
+      <Name>Interop.Modules.UserInterface</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
