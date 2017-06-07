@@ -40,9 +40,9 @@ namespace Interop
         {
             base.ConfigureContainer();
             
-            this.RegisterTypeIfMissing(typeof(IHttpService), typeof(Modules.Client.Services.HttpService), true);
-            this.RegisterTypeIfMissing(typeof(ITelemetryService), typeof(Modules.Client.Services.TelemetryService), true);
-            this.RegisterTypeIfMissing(typeof(ITargetService), typeof(Modules.Client.Services.TargetService), true);
+            this.RegisterTypeIfMissing(typeof(IHttpService), typeof(Infrastructure.Services.HttpService), true);
+            this.RegisterTypeIfMissing(typeof(IMavlinkService), typeof(Infrastructure.Services.MavlinkService), true);
+            this.RegisterTypeIfMissing(typeof(ITargetService), typeof(Infrastructure.Services.TargetService), true);
         }
     }
 }

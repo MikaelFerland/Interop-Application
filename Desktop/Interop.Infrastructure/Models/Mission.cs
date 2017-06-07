@@ -236,6 +236,7 @@ namespace Interop.Infrastructure.Models
     public abstract class BasePoint
     {
         virtual public PointType GpsType { get; }
+        virtual public bool IsSelected {get;set;}
         virtual public string Tag { get; }
         virtual public string Description { get; }
         virtual public double Latitude { get; set; }

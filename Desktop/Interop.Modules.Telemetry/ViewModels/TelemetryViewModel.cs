@@ -1,7 +1,7 @@
 ﻿using Interop.Infrastructure.Events;
 using Interop.Infrastructure.Interfaces;
 using Interop.Infrastructure.Models;
-
+using MavLinkNet;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
@@ -17,14 +17,14 @@ namespace Interop.Modules.Telemetry.ViewModels
 		IEventAggregator _eventAggregator;
 		static Timer _watchdog;
 
-		public TelemetryViewModel(IEventAggregator eventAggregator, ITelemetryService telemetryService)
+		public TelemetryViewModel(IEventAggregator eventAggregator, IMavlinkService mavlinkService)
 		{
 			if (eventAggregator == null)
 			{
 				throw new ArgumentNullException("eventAggregator");
 			}
 
-			if (telemetryService == null)
+			if (mavlinkService == null)
 			{
 				throw new ArgumentNullException("telemetryService");
 			}
@@ -33,41 +33,41 @@ namespace Interop.Modules.Telemetry.ViewModels
 
 			_watchdog = new Timer(1000);
 			_watchdog.Elapsed += new ElapsedEventHandler(Timer_Elapsed);
-
+            
 			_eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(Update_Telemetry, true);
-
 			Title = "Telemetry Region";
 		}
 
 		public string Title { get; set; }
 
-		public void Update_Telemetry(Infrastructure.Models.DroneTelemetry droneTelemetry)
-		{
-			bool isTelemetryUpdated = false;
+        public void Update_Telemetry(DroneTelemetry droneTelemetry)
+        {
+            bool isTelemetryUpdated = false;
 
-			if (droneTelemetry.GlobalPositionInt != null)
-			{
-				DronePosition = $"{droneTelemetry.Latitutde.ToString()}, {droneTelemetry.Longitude.ToString()}";
-				DroneAltitude = $"{droneTelemetry.AltitudeMSL.ToString()}, feet";
-				isTelemetryUpdated = true;
-			}
+            if (droneTelemetry.GlobalPositionInt != null)
+            {
+                DronePosition = $"{droneTelemetry.Latitutde.ToString()}, {droneTelemetry.Longitude.ToString()}";
+                DroneAltitude = $"{droneTelemetry.AltitudeMSL.ToString()}, feet";
+                isTelemetryUpdated = true;
+            }
 
-			if (droneTelemetry.VfrHUD != null)
-			{
-				DroneHeading = $"{droneTelemetry.Heading.ToString()}";
-				isTelemetryUpdated = true;
-			}
+            if (droneTelemetry.VfrHUD != null)
+            {
+                DroneHeading = $"{droneTelemetry.Heading.ToString()}";
+                isTelemetryUpdated = true;
+            }
 
-			if (isTelemetryUpdated == true)
-			{
-				_watchdog.Enabled = false;
-				_watchdog.Start();
-				_watchdog.Enabled = true;
-				this.IsDroneOnline = true;
-			}			
-		}
+            if (isTelemetryUpdated == true)
+            {
+                _watchdog.Enabled = false;
+                _watchdog.Start();
+                _watchdog.Enabled = true;
+                this.IsDroneOnline = true;
+            }
+        }
 
-		private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
 		{
 			this.IsDroneOnline = false;
 		}

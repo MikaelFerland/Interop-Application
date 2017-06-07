@@ -14,7 +14,7 @@ using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Description;
 using System.ServiceModel.Channels;
 
-namespace Interop.Modules.Client.Services
+namespace Interop.Infrastructure.Services
 {
     public class TargetService : ITargetService
     {

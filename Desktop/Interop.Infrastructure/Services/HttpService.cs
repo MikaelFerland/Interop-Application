@@ -19,14 +19,14 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace Interop.Modules.Client.Services
+namespace Interop.Infrastructure.Services
 {
     public class HttpService : IHttpService
     {
         string USER = "testuser";
         string PASS = "testpass";
         string HOST = "http://192.168.99.100:8000";
-        string REFRESH_RATE = "500";
+        string REFRESH_RATE = "5";
 
         bool _isInitialized = false;
         static object[] REQUESTS =  {new GetTargets(), new GetObstacles(), new GetMissions() };
@@ -100,20 +100,20 @@ namespace Interop.Modules.Client.Services
         //                _eventAggregator.GetEvent<UpdateMissionEvent>().Publish(ctargetTask.Result);
         //            });
 
-        //            _isInitialized = true;                    
+        //            _isInitialized = true;
         //            return;
         //        }
 
-        //        tasks.Add(RunAsync<List<Target>>((IRequest)REQUESTS[0]).ContinueWith(ctargetTask =>
+        //        tasks.Add(Task.Run(() => RunAsync<List<Target>>((IRequest)REQUESTS[0]).ContinueWith(ctargetTask =>
         //        {
         //            _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(ctargetTask.Result);
         //            _isImagesLoadedTask = LoadImages(ctargetTask.Result);
-        //        }));
+        //        })));
 
-        //        tasks.Add(RunAsync<Obstacles>((IRequest)REQUESTS[1]).ContinueWith(ctargetTask =>
+        //        tasks.Add(Task.Run(() => RunAsync<Obstacles>((IRequest)REQUESTS[1]).ContinueWith(ctargetTask =>
         //        {
         //            _eventAggregator.GetEvent<UpdateObstaclesEvent>().Publish(ctargetTask.Result);
-        //        }));
+        //        })));
 
         //        await Task.WhenAny(tasks);
         //        tasks.Clear();
@@ -125,20 +125,20 @@ namespace Interop.Modules.Client.Services
         //    }
 
         //    // You can decrease the value to get faster refresh
-        //    if (REFRESH_RATE !=string.Empty)
+        //    if (REFRESH_RATE != string.Empty)
         //    {
-
         //        await Task.Delay(TimeSpan.FromMilliseconds(int.Parse(REFRESH_RATE))).ConfigureAwait(false);
         //    }
 
         //}
 
-        public Task Run()
+        public async Task Run()
         {
             //TODO: Latency monitoring, handle timeout if server is down. 
 
             try
             {
+
                 if (!_isInitialized)
                 {
                     _targetsTask = RunAsync<List<Target>>((IRequest)REQUESTS[0]);
@@ -147,7 +147,7 @@ namespace Interop.Modules.Client.Services
                     _missionsTask = RunAsync<List<Mission>>((IRequest)REQUESTS[2]);
                     _isImagesLoadedTask = LoadImages(_targetsTask.Result);
                     _isInitialized = true;
-                    return Task.FromResult(true);
+                    //return Task.FromResult(true);
                 }
 
                 if (_targetsTask.IsCompleted)
@@ -162,11 +162,13 @@ namespace Interop.Modules.Client.Services
                     _eventAggregator.GetEvent<UpdateObstaclesEvent>().Publish(_obstaclesTask.Result);
                     _obstaclesTask = RunAsync<Obstacles>((IRequest)REQUESTS[1]);
                 }
-
-                if (_missionsTask.IsCompleted)
+                
+                if (_missionsTask != null && _missionsTask.IsCompleted)
                 {
                     _eventAggregator.GetEvent<UpdateMissionEvent>().Publish(_missionsTask.Result);
+                    _missionsTask = null;
                 }
+
             }
             catch (AggregateException aggEx)
             {
@@ -177,12 +179,11 @@ namespace Interop.Modules.Client.Services
             // You can decrease the value to get faster refresh
             if (REFRESH_RATE != string.Empty)
             {
-                Task.Delay(TimeSpan.FromMilliseconds(int.Parse(REFRESH_RATE))).ConfigureAwait(false);                
+                await Task.Delay(TimeSpan.FromMilliseconds(int.Parse(REFRESH_RATE))).ConfigureAwait(false);
             }
-            return Task.FromResult(true);
+            //return Task.FromResult(true);
         }
-
-
+        
         private async Task<T> RunAsync<T>(IRequest request) where T : class
         {
             using (var handler = new HttpClientHandler() { CookieContainer = _cookieContainer })

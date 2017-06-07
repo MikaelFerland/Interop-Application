@@ -101,7 +101,7 @@ namespace Interop.Modules.UserInterface.ViewModels
                     ConnectionStatus = "Connect";
                 });
 
-                Task.Run(() => {
+                Task.Run(async () => {
                     _connected = _httpService.Login(Username, Password);
 
                     if (_connected == true)
@@ -111,7 +111,7 @@ namespace Interop.Modules.UserInterface.ViewModels
 
                         while (!_connectionCancellationSource.Token.IsCancellationRequested)
                         {
-                            _httpService.Run();
+                            await _httpService.Run();
                         }
                     }
                     _connectionCancellationSource.Dispose();

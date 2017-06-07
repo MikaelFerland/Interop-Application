@@ -11,7 +11,7 @@ using System.Text;
 using Prism.Events;
 using System.Threading.Tasks;
 
-namespace Interop.Modules.Client.Server
+namespace Interop.Infrastructure.Server
 {
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "TargetService" in both code and config file together.
     public class TargetServer : ITargetServer

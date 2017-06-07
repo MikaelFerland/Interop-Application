@@ -40,9 +40,8 @@
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Prism, Version=6.1.0.0, Culture=neutral, PublicKeyToken=91a96d2a154366d8, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Prism.Core.6.1.0\lib\net45\Prism.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Prism, Version=6.3.0.0, Culture=neutral, PublicKeyToken=40ee6c3a2184dc59, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Prism.Core.6.3.0\lib\net45\Prism.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -75,11 +74,12 @@
     <Compile Include="Events\UpdateSelectedMission.cs" />
     <Compile Include="Events\UpdateTargetsEvent.cs" />
     <Compile Include="Events\UpdateTelemetry.cs" />
+    <Compile Include="Events\UpdateUasMessage.cs" />
     <Compile Include="Interfaces\IHttpService.cs" />
     <Compile Include="Interfaces\IRequest.cs" />
     <Compile Include="Interfaces\ITargetServer.cs" />
     <Compile Include="Interfaces\ITargetService.cs" />
-    <Compile Include="Interfaces\ITelemetryService.cs" />
+    <Compile Include="Interfaces\IMavlinkService.cs" />
     <Compile Include="Interfaces\IView.cs" />
     <Compile Include="Models\DroneTelemetry.cs" />
     <Compile Include="Models\Mission.cs" />
@@ -105,8 +105,8 @@
     <Compile Include="Requests\GetTargets.cs" />
     <Compile Include="Server\TargetServer.cs" />
     <Compile Include="Services\HttpService.cs" />
+    <Compile Include="Services\MavlinkService.cs" />
     <Compile Include="Services\TargetService.cs" />
-    <Compile Include="Services\TelemetryService.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -119,7 +119,12 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\external\mavlink.net\mavlink.net\mavlink.net.csproj">
+      <Project>{2dff5e5b-eb22-4c03-bec9-994b112b8e78}</Project>
+      <Name>mavlink.net</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

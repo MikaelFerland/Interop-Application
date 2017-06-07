@@ -87,7 +87,7 @@ namespace Interop.Modules.Details.ViewModels
             }
         }
 
-        BasePoint _gpsPoint;
+        private BasePoint _gpsPoint;
         public BasePoint GpsPoint
         {
             get
@@ -96,9 +96,12 @@ namespace Interop.Modules.Details.ViewModels
             }
             set
             {
+                if(_gpsPoint != null)
+                    _gpsPoint.IsSelected = false;
+
                 if (SetProperty(ref _gpsPoint, value))
                 {
-
+                    _gpsPoint.IsSelected = true;
                 }
             }
         }

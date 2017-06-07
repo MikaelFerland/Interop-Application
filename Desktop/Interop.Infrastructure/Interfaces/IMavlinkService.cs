@@ -1,6 +1,6 @@
 ﻿namespace Interop.Infrastructure.Interfaces
 {
-    public interface ITelemetryService
+    public interface IMavlinkService
     {
     }
 }

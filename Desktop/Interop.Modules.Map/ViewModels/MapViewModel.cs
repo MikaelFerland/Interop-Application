@@ -43,7 +43,7 @@ namespace Interop.Modules.Map.ViewModels
             _view = (view as Views.MapView);
             _map = _view.Map;
                         
-            _eventAggregator.GetEvent<UpdateObstaclesEvent>().Subscribe(Update_Obstacles);
+            _eventAggregator.GetEvent<UpdateObstaclesEvent>().Subscribe(Update_Obstacles, ThreadOption.UIThread);
             _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(Update_DronePosition);
             _eventAggregator.GetEvent<UpdateTargetsEvent>().Subscribe(Update_TargetsLocation);
             _eventAggregator.GetEvent<UpdateSelectedMission>().Subscribe(Update_SelectedMission);
@@ -134,9 +134,8 @@ namespace Interop.Modules.Map.ViewModels
 
             _map.Markers.Add(geofence);
         }
-
         public void SetGeofenceFromCurrentMission(Mission mission)
-        {
+        {            
             if (mission == null) return;
 
             _polygonPointsLatLng.Clear();
@@ -194,6 +193,7 @@ namespace Interop.Modules.Map.ViewModels
         {
             if (mission == null) return;
 
+            _area.Clear();
             foreach (var searchGridPoint in mission.SearchGridPoints)
             {
                 var gpsPoint = new PointLatLng { Lat = searchGridPoint.Latitude, Lng = searchGridPoint.Longitude };
@@ -202,7 +202,7 @@ namespace Interop.Modules.Map.ViewModels
             }
 
             var area = new GMapPolygon(_area);
-
+            
             var polygon = new System.Windows.Shapes.Path();
             var strokeBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.DarkBlue);
             strokeBrush.Opacity = 0.4;
@@ -281,12 +281,22 @@ namespace Interop.Modules.Map.ViewModels
             label.VerticalAlignment = VerticalAlignment.Center;
 
             var shape = new System.Windows.Shapes.Rectangle();
-            shape.Height = label.Height;
+            shape.Height = label.Height/2;
             shape.Width = label.Width;
-            shape.Stroke = color;
-            shape.Opacity = 70;
-            
 
+            if (gpsPoint.IsSelected)
+            {
+                shape.Fill = System.Windows.Media.Brushes.Red;
+                shape.Opacity = 70;
+                marker.ZIndex = 2;
+            }
+            else
+            {
+                shape.Fill = null;
+                shape.Stroke = color;
+                marker.ZIndex = 1;
+            }
+               
             grid.Children.Add(shape);
             grid.Children.Add(label);
 
@@ -302,9 +312,11 @@ namespace Interop.Modules.Map.ViewModels
             {
                 try
                 {
+
+                    //if (Application.Current == null) return;
                     // We are able to modify the markers collection only if we are on the same thread
                     // http://stackoverflow.com/questions/18331723/this-type-of-collectionview-does-not-support-changes-to-its-sourcecollection-fro
-                    Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE
+                    //Application.Current.Dispatcher.Invoke((Action)delegate // <--- HERE                    
                     {
                         _map.Markers.Clear();
 
@@ -370,7 +382,7 @@ namespace Interop.Modules.Map.ViewModels
                         SetTargets();
                         SetMission(_currentMission);
                         //SetArea();
-                    });
+                    }//);
                 }
                 catch (Exception ex)
                 {
