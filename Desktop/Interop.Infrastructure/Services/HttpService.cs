@@ -10,6 +10,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -39,6 +40,8 @@ namespace Interop.Infrastructure.Services
         Task<Obstacles> _obstaclesTask;
         Task<List<Mission>> _missionsTask;
         Task<bool> _isImagesLoadedTask;
+
+        List<Target> targets = new List<Target>();
 
         List<Task> tasks = new List<Task>();
 
@@ -152,6 +155,15 @@ namespace Interop.Infrastructure.Services
 
                 if (_targetsTask.IsCompleted)
                 {
+                    var targetsReceived = _targetsTask.Result;
+
+                    //if (!Target.ScrambledEquals(targets, targetsReceived))
+                    //{
+                    //    targets = targetsReceived;
+                    //    _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(_targetsTask.Result);
+                    //    _isImagesLoadedTask = LoadImages(_targetsTask.Result);
+                    //}
+                    targets = targetsReceived;
                     _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(_targetsTask.Result);
                     _isImagesLoadedTask = LoadImages(_targetsTask.Result);
                     _targetsTask = RunAsync<List<Target>>((IRequest)REQUESTS[0]);

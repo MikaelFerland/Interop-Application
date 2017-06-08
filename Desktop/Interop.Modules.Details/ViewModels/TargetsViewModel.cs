@@ -67,8 +67,8 @@ namespace Interop.Modules.Details.ViewModels
             }
             set
             {
-                TargetEqualityComparer TargetEqC = new TargetEqualityComparer();
-                if (!ScrambledEquals(Targets.OrderBy(t => t), value.OrderBy(t => t), TargetEqC))
+                //TargetEqualityComparer TargetEqC = new TargetEqualityComparer();
+                if (!Target.ScrambledEquals(Targets, value))
                 //if(!Enumerable.SequenceEqual(_targets.OrderBy(t => t.id), value.OrderBy(t => t.id),TargetEqC))
                 {                    
                     if (SetProperty(ref _targets, value))
