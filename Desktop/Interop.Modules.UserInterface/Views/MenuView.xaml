@@ -7,12 +7,15 @@
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d" 
-             d:DesignHeight="30" d:DesignWidth="300">
+             d:DesignHeight="30" d:DesignWidth="400">
     <Grid>
         <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
+            <ComboBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding CurrentAccount}"  DisplayMemberPath="Name"/>
+
+            <!--<TextBox BorderBrush="Black" Width="105" HorizontalContentAlignment="Center" Text="{Binding HostAddress}"/>
             <TextBox BorderBrush="Black" Width="70" Text="{Binding Username}"/>
             <Separator></Separator>
-            <PasswordBox BorderBrush="Black" Width="70" HorizontalAlignment="Center" Password="testpass"/>
+            <PasswordBox BorderBrush="Black" Width="70" HorizontalAlignment="Center" Password="testpass"/>-->
             <Button x:Name="btnConnect" Width="70" Content="{Binding ConnectionStatus}" Command="{Binding Path=ConnectCommand}"  />
         </StackPanel>
     </Grid>

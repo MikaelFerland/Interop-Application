@@ -34,7 +34,7 @@ namespace Interop.Examples.Client
             int.TryParse(tbx_id.Text, out id);
 
             tbx_targetId.Text = id.ToString();
-            cbx_operation.SelectedItem = InteropTargetMessage.OperationsTypes.NEW;
+            cbx_operation.SelectedItem = InteropTargetMessage.OperationsTypes.Add;
             cbx_operation.ItemsSource = Enum.GetValues(typeof(InteropTargetMessage.OperationsTypes));
             tbx_targetName.Text = "Test Target";
             tbx_targetId.Text = "999";
@@ -42,7 +42,7 @@ namespace Interop.Examples.Client
             tbx_posY.Text = "500";
 
             tbx_latitude.Text = "45.5239885101173";
-            tbx_longitude.Text = "73.4215310286758";
+            tbx_longitude.Text = "-73.4215310286758";
             tbx_orientation.Text = InteropTargetMessage.Orientations.N.ToString();
             tbx_shape.Text = InteropTargetMessage.Shapes.circle.ToString();
             tbx_character.Text = "r";
@@ -61,7 +61,7 @@ namespace Interop.Examples.Client
 
             string myIP = GetLocalIPAddress();
 
-            Uri baseAddress = new Uri($"net.tcp://{myIP}:8000/targetserver");
+            Uri baseAddress = new Uri($"net.tcp://192.168.1.107:8000/targetserver");
             EndpointAddress address = new EndpointAddress(baseAddress);
             ChannelFactory<ITargetServer> channelFactory = new ChannelFactory<ITargetServer>(binding, address);
             _targetServer = channelFactory.CreateChannel();
@@ -112,7 +112,7 @@ namespace Interop.Examples.Client
             interopMessage.Latitude = latitude;
 
             double longitude;
-            double.TryParse(tbx_latitude.Text, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out longitude);
+            double.TryParse(tbx_longitude.Text, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out longitude);
             interopMessage.Longitude = longitude;
 
             int orientation;

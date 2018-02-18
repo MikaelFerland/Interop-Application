@@ -17,7 +17,7 @@ namespace Interop.Modules.Telemetry.ViewModels
 		IEventAggregator _eventAggregator;
 		static Timer _watchdog;
 
-		public TelemetryViewModel(IEventAggregator eventAggregator, IMavlinkService mavlinkService)
+		public TelemetryViewModel(IEventAggregator eventAggregator, ITelemetryService mavlinkService)
 		{
 			if (eventAggregator == null)
 			{
@@ -34,7 +34,7 @@ namespace Interop.Modules.Telemetry.ViewModels
 			_watchdog = new Timer(1000);
 			_watchdog.Elapsed += new ElapsedEventHandler(Timer_Elapsed);
             
-			_eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(Update_Telemetry, true);
+			_eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(Update_Telemetry, ThreadOption.UIThread, true);
 			Title = "Telemetry Region";
 		}
 
@@ -46,7 +46,7 @@ namespace Interop.Modules.Telemetry.ViewModels
 
             if (droneTelemetry.GlobalPositionInt != null)
             {
-                DronePosition = $"{droneTelemetry.Latitutde.ToString()}, {droneTelemetry.Longitude.ToString()}";
+                DronePosition = $"{droneTelemetry.Latitude.ToString()}, {droneTelemetry.Longitude.ToString()}";
                 DroneAltitude = $"{droneTelemetry.AltitudeMSL.ToString()}, feet";
                 isTelemetryUpdated = true;
             }

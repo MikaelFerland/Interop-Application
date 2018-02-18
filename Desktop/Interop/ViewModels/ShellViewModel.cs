@@ -2,7 +2,7 @@
 
 namespace Interop.ViewModels
 {
-    public class MainWindowViewModel : BindableBase
+    public class ShellViewModel : BindableBase
     {
         private string _title = "Interop Application";
         public string Title
@@ -11,7 +11,7 @@ namespace Interop.ViewModels
             set { SetProperty(ref _title, value); }
         }
 
-        public MainWindowViewModel()
+        public ShellViewModel()
         {
 
         }

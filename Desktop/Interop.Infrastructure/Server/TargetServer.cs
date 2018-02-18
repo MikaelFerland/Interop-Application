@@ -39,12 +39,12 @@ namespace Interop.Infrastructure.Server
 
             switch (tInfo.Operation)
             {
-                case InteropTargetMessage.OperationsTypes.TEST:
+                case InteropTargetMessage.OperationsTypes.Test:
                     {
                         response.Message = "PING OK";
                         break;
                     }
-                case InteropTargetMessage.OperationsTypes.NEW:
+                case InteropTargetMessage.OperationsTypes.Add:
                     {
                         Task<bool> waitTask;
 
@@ -80,14 +80,14 @@ namespace Interop.Infrastructure.Server
                         break;
                     }
 
-                case InteropTargetMessage.OperationsTypes.DELETE:
+                case InteropTargetMessage.OperationsTypes.Remove:
                     {
                         _eventAggregator.GetEvent<DeleteTargetEvent>().Publish(tInfo.InteropID);
                         response.Message = "TARGET DELETED";
                         break;
                     }
 
-                case InteropTargetMessage.OperationsTypes.EDIT:
+                case InteropTargetMessage.OperationsTypes.Edit:
                     {
                         _eventAggregator.GetEvent<PutTargetEvent>().Publish(tInfo);
                         response.Message = "TARGET EDITED";

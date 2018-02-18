@@ -24,7 +24,7 @@ namespace Interop.Infrastructure.Interfaces
     [MessageContract]
     public class InteropTargetMessage
     {
-        public enum OperationsTypes { NEW, EDIT, DELETE, TEST };
+        public enum OperationsTypes { Add, Edit, Remove, Test };
         public enum Orientations { N, NE, E, SE, S, SW, W, NW };
         public enum Shapes { circle, semicircle, quarter_circle, triangle, square, rectangle, trapezoid, pentagon, hexagon, heptagon, octagon, star, cross };
         public enum Colors { white, black, gray, red, blue, green, yellow, purple, brown, orange };

@@ -82,7 +82,7 @@ namespace Interop.Modules.Details.ViewModels
         private void DeleteTarget()
         {
             if(_targets.Contains(CurrentTarget))
-            { 
+            {
                 _eventAggregator.GetEvent<DeleteTargetEvent>().Publish(CurrentTarget.id);
             }
         }
@@ -105,27 +105,38 @@ namespace Interop.Modules.Details.ViewModels
                 {
                     _eventAggregator.GetEvent<TargetImagesEvent>().Subscribe(delegate (ConcurrentDictionary<int, byte[]> dictBytesImage)
                     {
-                        if (dictBytesImage.Keys.Contains(CurrentTarget.id))
+                        if (CurrentTarget != null)
                         {
-                            var currentImage = dictBytesImage[CurrentTarget.id];
-                            var imageConverter = new ImageSourceConverter();
-
-                            if (currentImage.Length > 1)
+                            if (dictBytesImage.Keys.Contains(CurrentTarget.id))
                             {
-                                var imageSource = imageConverter.ConvertFrom(currentImage);
-                                DisplayedImage = (BitmapSource)imageSource;
-                            }
+                                var currentImage = dictBytesImage[CurrentTarget.id];
+                                var imageConverter = new ImageSourceConverter();
 
-                            //using (var ms = new System.IO.MemoryStream(currentImage))
-                            //{
-                            //    var image = new BitmapImage();
-                            //    image.BeginInit();
-                            //    image.CacheOption = BitmapCacheOption.OnLoad; // here
-                            //    image.StreamSource = ms;
-                            //    image.EndInit();
-                            //    DisplayedImage = image;
-                            //}
+                                if (currentImage.Length > 1)
+                                {
+                                    var imageSource = imageConverter.ConvertFrom(currentImage);
+                                    DisplayedImage = (BitmapSource)imageSource;
+                                }
+
+                                //using (var ms = new System.IO.MemoryStream(currentImage))
+                                //{
+                                //    var image = new BitmapImage();
+                                //    image.BeginInit();
+                                //    image.CacheOption = BitmapCacheOption.OnLoad; // here
+                                //    image.StreamSource = ms;
+                                //    image.EndInit();
+                                //    DisplayedImage = image;
+                                //}
+                            }
                         }
+                        else
+                        {
+
+                            //var imageConverter = new ImageSourceConverter();
+                            //var imageSource = imageConverter.ConvertFrom(new byte[] { 0 });
+                            DisplayedImage = null;
+                        }
+                           
                     });
                     //this.OnPropertyChanged(() => this.);
                 }

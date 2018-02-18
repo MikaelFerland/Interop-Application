@@ -38,6 +38,45 @@ namespace Interop.Modules.UserInterface.ViewModels
             _eventAggregator = eventAggregator;
                         
             this.ConnectCommand = new DelegateCommand(this.ConnectClient, this.CanConnectClient);
+
+            Accounts = new List<Account> {
+                new Account("192.168.99.100","testuser", "testpass", "8000"),
+                new Account("10.10.130.10","ets", "4532779881", "80")
+            };
+
+            CurrentAccount = Accounts[1];
+        }
+
+        public List<Account> Accounts { get; set; }
+
+        private Account _currentAccount;
+        public Account CurrentAccount
+        {
+            get
+            {
+                return _currentAccount;
+            }
+
+            set
+            {
+                if (SetProperty(ref _currentAccount, value))
+                {
+                    this.ConnectCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
+        private string _hostAddress = "192.168.99.100";
+        public string HostAddress
+        {
+            get { return _hostAddress; }
+            set
+            {
+                if (SetProperty(ref _hostAddress, value))
+                {
+
+                }
+            }
         }
 
         private string _username = "testuser";
@@ -101,21 +140,19 @@ namespace Interop.Modules.UserInterface.ViewModels
                     ConnectionStatus = "Connect";
                 });
 
-                Task.Run(async () => {
-                    _connected = _httpService.Login(Username, Password);
+                Task.Factory.StartNew(async () => {
+                    _connected = await _httpService.Login(CurrentAccount.Username, CurrentAccount.Password, CurrentAccount.HostAddress, CurrentAccount.Port).ConfigureAwait(false);
 
                     if (_connected == true)
                     {
                         ConnectionStatus = "Disconnect";
                         _eventAggregator.GetEvent<UpdateLoginStatusEvent>().Publish(string.Format($"Connected as {Username}"));
 
-                        while (!_connectionCancellationSource.Token.IsCancellationRequested)
-                        {
-                            await _httpService.Run();
-                        }
+                        await _httpService.Run(_connectionCancellationSource.Token).ConfigureAwait(false);
+
                     }
                     _connectionCancellationSource.Dispose();
-                });
+                }, TaskCreationOptions.LongRunning);
             }            
         }
 
@@ -126,7 +163,29 @@ namespace Interop.Modules.UserInterface.ViewModels
 
         private bool CanConnectClient()
         {
-            return true;
+            return CurrentAccount != null;
+        }
+
+        internal class Account : BindableBase
+        {
+            public Account(string hostAddress, string username, string password, string port)
+            {
+                HostAddress = hostAddress;
+                Username = username;
+                Password = password;
+                Port = port;
+            }
+            public string HostAddress { get; private set; }
+            public string Username { get; private set; }
+            public string Password { get; private set; }
+            public string Port { get; private set; }
+            public string Name
+            {
+                get
+                {
+                    return $"{Username}@{HostAddress}";
+                }
+            }
         }
     }
 }

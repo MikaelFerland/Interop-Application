@@ -80,10 +80,12 @@
     <Compile Include="Interfaces\ITargetServer.cs" />
     <Compile Include="Interfaces\ITargetService.cs" />
     <Compile Include="Interfaces\IMavlinkService.cs" />
+    <Compile Include="Interfaces\ITelemetryService.cs" />
     <Compile Include="Interfaces\IView.cs" />
     <Compile Include="Models\DroneTelemetry.cs" />
     <Compile Include="Models\Mission.cs" />
     <Compile Include="Models\Obstacles.cs" />
+    <Compile Include="Models\Qmission.cs" />
     <Compile Include="Models\Target.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -107,6 +109,7 @@
     <Compile Include="Services\HttpService.cs" />
     <Compile Include="Services\MavlinkService.cs" />
     <Compile Include="Services\TargetService.cs" />
+    <Compile Include="Services\TelemetryService.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

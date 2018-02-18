@@ -1,10 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interop", "Desktop\Interop\Interop.csproj", "{99C9E82C-C594-446D-AA59-8FFBC43AD226}"
 	ProjectSection(ProjectDependencies) = postProject
+		{2DFF5E5B-EB22-4C03-BEC9-994B112B8E78} = {2DFF5E5B-EB22-4C03-BEC9-994B112B8E78}
 		{7825C586-B735-493B-9EB5-B89ECC53B466} = {7825C586-B735-493B-9EB5-B89ECC53B466}
 		{F4D76EF1-D9F8-493C-8F7A-B12EA92F5CBB} = {F4D76EF1-D9F8-493C-8F7A-B12EA92F5CBB}
 	EndProjectSection

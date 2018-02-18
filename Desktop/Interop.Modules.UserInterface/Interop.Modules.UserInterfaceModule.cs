@@ -17,6 +17,7 @@ namespace Interop.Modules.UserInterface
 
         public void Initialize()
         {
+            _regionManager.RegisterViewWithRegion("Shell", typeof(MainView));
             _regionManager.RegisterViewWithRegion("SessionRegion", typeof(SessionStatusView));
             _regionManager.RegisterViewWithRegion("MenuRegion", typeof(MenuView));
         }

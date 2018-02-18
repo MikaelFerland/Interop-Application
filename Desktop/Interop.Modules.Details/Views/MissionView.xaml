@@ -12,19 +12,27 @@
         <GroupBox Header="Avalaible Missions" DockPanel.Dock="Top">
             <ListView x:Name="lv_missions" BorderBrush="Black" Background="White" Foreground="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" ItemsSource="{Binding Missions}" SelectedItem="{Binding CurrentMission}" DisplayMemberPath="Id" IsSynchronizedWithCurrentItem="True">
                 <ListView.View>
-                    <GridView>
+                    <GridView>                        
                         <GridViewColumn Header="Mission Id" DisplayMemberBinding="{Binding Path=Id}" />
                         <GridViewColumn Header="IsActive" DisplayMemberBinding="{Binding Path=Active}" />
                     </GridView>
                 </ListView.View>
             </ListView>
         </GroupBox>
+
+        <StackPanel DockPanel.Dock="Bottom">
+            <Button Height="Auto" Command="{Binding Path=ExportMissionCommand}">Export Mission</Button>
+        </StackPanel>
+
         <GroupBox Header="Mission Gps Points" DockPanel.Dock="Bottom">
             <ListView x:Name="lv_mission" BorderBrush="Black" Background="White" Foreground="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" ItemsSource="{Binding GpsPoints}" SelectedItem="{Binding GpsPoint}" DisplayMemberPath="Id" IsSynchronizedWithCurrentItem="True">
                 <ListView.View>
                     <GridView>
+                        <GridViewColumn Header="Tag" DisplayMemberBinding="{Binding Path=Tag}" />
                         <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Path=Description}" />
                         <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Path=GpsType}" />
+                        <GridViewColumn Header="Lat" DisplayMemberBinding="{Binding Path=Latitude}" />
+                        <GridViewColumn Header="Lon" DisplayMemberBinding="{Binding Path=Longitude}" />
                     </GridView>
                 </ListView.View>
             </ListView>

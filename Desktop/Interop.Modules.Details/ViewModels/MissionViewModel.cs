@@ -5,16 +5,14 @@ using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Interop.Modules.Details.ViewModels
 {
     class MissionViewModel : BindableBase
     {
         IEventAggregator _eventAggregator;
-        
+        public DelegateCommand ExportMissionCommand { get; private set; }
+
         public MissionViewModel(IEventAggregator eventAggregator)
         {
             if (eventAggregator == null)
@@ -22,6 +20,8 @@ namespace Interop.Modules.Details.ViewModels
                 throw new ArgumentNullException("eventAggregator");
             }
             _eventAggregator = eventAggregator;
+
+            this.ExportMissionCommand = new DelegateCommand(this.ExportMission, this.CanExportMission);
 
             _eventAggregator.GetEvent<UpdateMissionEvent>().Subscribe(Update_Mission);
         }
@@ -54,6 +54,18 @@ namespace Interop.Modules.Details.ViewModels
             }
         }
 
+        private void ExportMission()
+        {
+            var jsonToExport = QMission.CreateQGrouncontrolMission(CurrentMission);
+
+            System.IO.File.WriteAllText("interop.mission", jsonToExport);
+        }
+
+        private bool CanExportMission()
+        {
+            return (this.CurrentMission != null);
+        }
+
         private Mission _mission;
         public Mission CurrentMission
         {
@@ -65,6 +77,7 @@ namespace Interop.Modules.Details.ViewModels
             {
                 if (SetProperty(ref _mission, value))
                 {
+                    this.ExportMissionCommand.RaiseCanExecuteChanged();
                     GpsPoints = _mission.GetAllGpsPoints();
                     _eventAggregator.GetEvent<UpdateSelectedMission>().Publish(_mission);
                 }

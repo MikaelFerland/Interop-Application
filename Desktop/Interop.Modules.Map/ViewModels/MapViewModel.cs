@@ -26,6 +26,8 @@ namespace Interop.Modules.Map.ViewModels
         List<Target> _targets;
         Mission _currentMission;
 
+        Dictionary<string, GMapMarker> _obstacles = new Dictionary<string, GMapMarker>();
+
         public MapViewModel(IEventAggregator eventAggregator, IHttpService httpService, IView view)
         {
             if (eventAggregator == null)
@@ -45,7 +47,7 @@ namespace Interop.Modules.Map.ViewModels
                         
             _eventAggregator.GetEvent<UpdateObstaclesEvent>().Subscribe(Update_Obstacles, ThreadOption.UIThread);
             _eventAggregator.GetEvent<UpdateTelemetry>().Subscribe(Update_DronePosition);
-            _eventAggregator.GetEvent<UpdateTargetsEvent>().Subscribe(Update_TargetsLocation);
+            _eventAggregator.GetEvent<UpdateTargetsEvent>().Subscribe(Update_TargetsLocation, ThreadOption.UIThread);
             _eventAggregator.GetEvent<UpdateSelectedMission>().Subscribe(Update_SelectedMission);
             //SetGeofence();
             //SetArea();
@@ -57,7 +59,7 @@ namespace Interop.Modules.Map.ViewModels
             var res   = 156543.03 * Math.Cos(latitude) / Math.Pow(2.0, zoomLevel);
             var scale = 1 / (DPI * 39.37 * res);
 
-            return scale * mapDimension;
+            return System.Math.Abs(scale * mapDimension);
         }
 
         public void Update_Obstacles(Infrastructure.Models.Obstacles obstacles)
@@ -71,7 +73,7 @@ namespace Interop.Modules.Map.ViewModels
         {
             if (droneTelemetry.GlobalPositionInt != null)
             {
-                this.Position = new Point(droneTelemetry.Latitutde, droneTelemetry.Longitude);
+                this.Position = new Point(droneTelemetry.Latitude, droneTelemetry.Longitude);
             }
         }
 
@@ -81,10 +83,17 @@ namespace Interop.Modules.Map.ViewModels
             {
                 _targets = targets;
             }
+
+            //SetTargets();
         }
         public void Update_SelectedMission(Mission mission)
         {
             _currentMission = mission;
+
+            //SetGeofenceFromCurrentMission(_currentMission);
+            //SetAreaFromCurrentMission(_currentMission);
+            
+            //SetMission(_currentMission);
         }
 
         public PointLatLng ExtactLatLon(string combinedPoint)
@@ -141,28 +150,29 @@ namespace Interop.Modules.Map.ViewModels
             _polygonPointsLatLng.Clear();
             foreach (var flyZone in mission.FlyZones)
             {
+                _polygonPointsLatLng.Clear();
                 foreach (var boundaryPoint in flyZone.BoundaryPoints)
                 {
                     _polygonPointsLatLng.Add(new PointLatLng { Lat=boundaryPoint.Latitude, Lng=boundaryPoint.Longitude });
                 }
+
+                var geofence = new GMapPolygon(_polygonPointsLatLng);
+
+                var polygon = new System.Windows.Shapes.Path();
+                var strokeBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
+                strokeBrush.Opacity = 1;
+                var fillBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Yellow);
+                fillBrush.Opacity = 0.1;
+
+                polygon.Fill = fillBrush;
+                polygon.Stroke = strokeBrush;
+                polygon.StrokeThickness = 3;
+
+                geofence.Shape = polygon;
+                geofence.RegenerateShape(_map);
+
+                _map.Markers.Add(geofence);
             }
-
-            var geofence = new GMapPolygon(_polygonPointsLatLng);
-
-            var polygon = new System.Windows.Shapes.Path();
-            var strokeBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
-            strokeBrush.Opacity = 1;
-            var fillBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Yellow);
-            fillBrush.Opacity = 0.1;
-
-            polygon.Fill = fillBrush;
-            polygon.Stroke = strokeBrush;
-            polygon.StrokeThickness = 3;
-
-            geofence.Shape = polygon;
-            geofence.RegenerateShape(_map);
-
-            _map.Markers.Add(geofence);
         }
 
         public void SetAreaFromFile()
@@ -198,11 +208,10 @@ namespace Interop.Modules.Map.ViewModels
             {
                 var gpsPoint = new PointLatLng { Lat = searchGridPoint.Latitude, Lng = searchGridPoint.Longitude };
                 _area.Add(gpsPoint);
-                AddMarker(searchGridPoint , System.Windows.Media.Brushes.Green);
             }
 
             var area = new GMapPolygon(_area);
-            
+
             var polygon = new System.Windows.Shapes.Path();
             var strokeBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.DarkBlue);
             strokeBrush.Opacity = 0.4;
@@ -225,14 +234,14 @@ namespace Interop.Modules.Map.ViewModels
                 foreach (Target target in _targets)
                 {
                     var marker = new GMapMarker(new PointLatLng(target.latitude, target.longitude));
-                    var res = scaleDimension(target.latitude, _map.Zoom, 0.3 * 12.0);
-
+                    //var res = scaleDimension(target.latitude, _map.Zoom, 0.3 * 12.0);
+                    
                     var grid = new Grid();
+
                     var shape = new System.Windows.Shapes.Rectangle();
-                    shape.Height = res * 2;
-                    shape.Width = res * 2;
                     shape.Fill = System.Windows.Media.Brushes.White;
                     shape.Opacity = 10;
+                    shape.Height = shape.Width = 20;
 
                     var label = new Label();
                     label.Content = target.id;
@@ -242,8 +251,8 @@ namespace Interop.Modules.Map.ViewModels
 
                     grid.Children.Add(shape);
                     grid.Children.Add(label);
-
-                    marker.Offset = new Point(-res, -res);
+                    
+                    marker.Offset = new Point(-shape.Height / 2, -shape.Height / 2);
                     marker.Shape = grid;
                     marker.ZIndex = 1;                    
                     _map.Markers.Add(marker);
@@ -280,9 +289,8 @@ namespace Interop.Modules.Map.ViewModels
             label.HorizontalAlignment = HorizontalAlignment.Center;
             label.VerticalAlignment = VerticalAlignment.Center;
 
-            var shape = new System.Windows.Shapes.Rectangle();
-            shape.Height = label.Height/2;
-            shape.Width = label.Width;
+            var shape = new System.Windows.Shapes.Rectangle();            
+            shape.Height = shape.Width = 15;
 
             if (gpsPoint.IsSelected)
             {
@@ -300,7 +308,7 @@ namespace Interop.Modules.Map.ViewModels
             grid.Children.Add(shape);
             grid.Children.Add(label);
 
-            marker.Offset = new Point(-res, -res);
+            marker.Offset = new Point(-shape.Width / 2, -shape.Height / 2);
             marker.Shape = grid;
             marker.ZIndex = 1;
             _map.Markers.Add(marker);
@@ -321,13 +329,49 @@ namespace Interop.Modules.Map.ViewModels
                         _map.Markers.Clear();
 
                         //Update static obstacles
+                        //int j = 0;
                         foreach (var obstacle in obstacles.stationary_obstacles)
                         {
+                            //GMapMarker mm;
+                            //if (!_obstacles.TryGetValue("st"+j, out mm))
+                            //{
+                            //    mm = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
+                            //    var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.cylinder_radius * 12.0);
+
+                            //    var grid = new Grid();
+                            //    var shape = new System.Windows.Shapes.Ellipse();
+                            //    shape.Height = res * 2;
+                            //    shape.Width = res * 2;
+                            //    shape.Fill = System.Windows.Media.Brushes.Cyan;
+                            //    shape.Opacity = 10;
+
+                            //    var label = new Label();
+                            //    label.Content = obstacle.cylinder_height;
+                            //    label.FontWeight = FontWeights.Bold;
+                            //    label.HorizontalAlignment = HorizontalAlignment.Center;
+                            //    label.VerticalAlignment = VerticalAlignment.Center;
+
+                            //    grid.Children.Add(shape);
+                            //    grid.Children.Add(label);
+
+                            //    mm.Offset = new Point(-res, -res);
+                            //    mm.Shape = grid;
+                            //    mm.ZIndex = 0;
+                            //    _obstacles.Add("st" + j, mm);
+                            //    _map.Markers.Add(mm);
+                            //    j++;
+                            //}
+                            //else
+                            //{
+                            //    mm.Position = new PointLatLng(obstacle.latitude, obstacle.longitude);
+                            //}
+
+
                             var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
                             var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.cylinder_radius * 12.0);
 
                             var grid = new Grid();
-                            var shape = new System.Windows.Shapes.Ellipse();                            
+                            var shape = new System.Windows.Shapes.Ellipse();
                             shape.Height = res * 2;
                             shape.Width = res * 2;
                             shape.Fill = System.Windows.Media.Brushes.Cyan;
@@ -349,8 +393,44 @@ namespace Interop.Modules.Map.ViewModels
                         }
 
                         //Update the moving obstacles
+                        //int i = 0;
                         foreach (var obstacle in obstacles.moving_obstacles)
                         {
+                            //GMapMarker mm;
+                            //if (!_obstacles.TryGetValue("mov"+i, out mm))
+                            //{
+                            //    mm = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
+                            //    var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.sphere_radius * 12.0);
+
+                            //    var grid = new Grid();
+                            //    var shape = new System.Windows.Shapes.Ellipse();
+                            //    shape.Height = res * 2.0;
+                            //    shape.Width = res * 2.0;
+                            //    shape.Fill = System.Windows.Media.Brushes.Red;
+                            //    shape.Opacity = 10;
+
+                            //    var label = new Label();
+                            //    label.Content = obstacle.altitude_msl.ToString("F0", System.Globalization.CultureInfo.InvariantCulture);
+                            //    label.FontWeight = FontWeights.Bold;
+                            //    label.HorizontalAlignment = HorizontalAlignment.Center;
+                            //    label.VerticalAlignment = VerticalAlignment.Center;
+
+                            //    grid.Children.Add(shape);
+                            //    grid.Children.Add(label);
+
+                            //    mm.Offset = new Point(-res, -res);
+                            //    mm.Shape = grid;
+                            //    mm.ZIndex = 0;
+
+                            //    _obstacles.Add("mov" + i, mm);
+                            //    _map.Markers.Add(mm);
+                            //    ++i;
+                            //}
+                            //else
+                            //{
+                            //    mm.Position = new PointLatLng(obstacle.latitude, obstacle.longitude);
+                            //}
+
                             var marker = new GMapMarker(new PointLatLng(obstacle.latitude, obstacle.longitude));
                             var res = scaleDimension(obstacle.latitude, _map.Zoom, obstacle.sphere_radius * 12.0);
 

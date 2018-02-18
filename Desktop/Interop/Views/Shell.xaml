@@ -1,0 +1,11 @@
+﻿<Window x:Class="Interop.Views.Shell"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:prism="http://prismlibrary.com/"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        Title="{Binding Title}"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized" Background="White">
+
+    <ContentControl prism:RegionManager.RegionName="Shell"/>
+</Window>
