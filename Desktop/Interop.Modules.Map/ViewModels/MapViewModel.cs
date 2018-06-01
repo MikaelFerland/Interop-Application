@@ -476,7 +476,8 @@ namespace Interop.Modules.Map.ViewModels
         /// <summary>
         /// This is the map provider that the control will use
         /// </summary>
-        GMapProvider _provider = GMapProviders.OviHybridMap;
+        /// 
+        GMapProvider _provider = GMapProviders.BingHybridMap;
         public GMapProvider Provider
         {
             get

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using MavLinkNet;
 
 namespace Interop.Infrastructure.Models
 {

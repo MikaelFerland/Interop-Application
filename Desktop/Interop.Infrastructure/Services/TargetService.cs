@@ -6,10 +6,6 @@ using System.Net.Sockets;
 using System.ServiceModel;
 
 using Prism.Events;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Description;
 using System.ServiceModel.Channels;
@@ -24,13 +20,7 @@ namespace Interop.Infrastructure.Services
         
         public TargetService(IEventAggregator eventAggregator)
         {
-            if (eventAggregator == null)
-            {
-                throw new ArgumentNullException("eventAggregator");
-            }
-
-            _eventAggregator = eventAggregator;
-
+            _eventAggregator = eventAggregator ?? throw new ArgumentNullException("eventAggregator");
 
             NetTcpBinding binding = new NetTcpBinding();
             binding.Security.Mode = SecurityMode.None;
@@ -38,13 +28,16 @@ namespace Interop.Infrastructure.Services
 
             string myIP = GetLocalIPAddress();
             
-            Uri baseAddress = new Uri($"net.tcp://192.168.1.107:8000/targetserver");
+            // Imagery server
+            // todo ask this value or detect it. Do not attempt to connect to invalid ip
+            Uri baseAddress = new Uri($"net.tcp://192.168.1.163:8000/targetserver");
             _serviceHost = new ServiceHost(typeof(Server.TargetServer), baseAddress);
             
             var instanceProvider = new InstanceProviderBehavior<ITargetServer>(() => new Server.TargetServer(eventAggregator));
             _serviceHost.AddServiceEndpoint(typeof(ITargetServer), binding, baseAddress);
             instanceProvider.AddToAllContracts(_serviceHost);
 
+            // todo disconnect
             _serviceHost.Open();
                 
             Console.WriteLine(String.Format("The Target server is ready at {0}.", baseAddress));
