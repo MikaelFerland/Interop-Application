@@ -158,7 +158,7 @@ namespace Interop.Infrastructure.Services
 
                     if (_targetsTask.IsCompleted)
                     {
-                        var targetsReceived = _targetsTask.Result;
+                        _targetsTask.ConfigureAwait(false);
 
                         //if (!Target.ScrambledEquals(targets, targetsReceived))
                         //{
@@ -166,7 +166,6 @@ namespace Interop.Infrastructure.Services
                         //    _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(_targetsTask.Result);
                         //    _isImagesLoadedTask = LoadImages(_targetsTask.Result);
                         //}
-                        targets = targetsReceived;
                         _eventAggregator.GetEvent<UpdateTargetsEvent>().Publish(_targetsTask.Result);
                         _isImagesLoadedTask = LoadImages(_targetsTask.Result);
                         _targetsTask = RunAsync<List<Target>>((IRequest)REQUESTS[0]);

@@ -40,7 +40,7 @@ namespace Interop.Modules.UserInterface.ViewModels
             this.ConnectCommand = new DelegateCommand(this.ConnectClient, this.CanConnectClient);
 
             Accounts = new List<Account> {
-                new Account("192.168.99.100","testuser", "testpass", "8000"),
+                new Account("192.168.1.131","testuser", "testpass", "8000"),
                 new Account("10.10.130.10","ets", "4532779881", "80")
             };
 
