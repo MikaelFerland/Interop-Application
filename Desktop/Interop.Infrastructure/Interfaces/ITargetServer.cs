@@ -61,8 +61,6 @@ namespace Interop.Infrastructure.Interfaces
         [MessageBodyMember]
         public Colors ForegroundColor;
         [MessageBodyMember]
-        public double Area;
-        [MessageBodyMember]
         public byte[] Image;
         [MessageBodyMember]
         public bool Autonomous;

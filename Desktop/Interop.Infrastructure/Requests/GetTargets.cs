@@ -12,7 +12,7 @@ namespace Interop.Modules.Client.Requests
 {
     class GetTargets : IRequest
     {
-        public const string _endpoint = "api/targets";
+        public const string _endpoint = "api/odlcs";
         public const eRequest _request = eRequest.GET;
         public List<Target> _targets = new List<Target>();
 

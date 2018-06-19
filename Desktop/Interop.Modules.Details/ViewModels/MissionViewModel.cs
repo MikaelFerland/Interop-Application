@@ -5,13 +5,14 @@ using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
+using Interop.Infrastructure;
 
 namespace Interop.Modules.Details.ViewModels
 {
     class MissionViewModel : BindableBase
     {
         IEventAggregator _eventAggregator;
-        public DelegateCommand ExportMissionCommand { get; private set; }
+        public RelayCommand ExportMissionCommand { get; private set; }
 
         public MissionViewModel(IEventAggregator eventAggregator)
         {
@@ -21,7 +22,7 @@ namespace Interop.Modules.Details.ViewModels
             }
             _eventAggregator = eventAggregator;
 
-            this.ExportMissionCommand = new DelegateCommand(this.ExportMission, this.CanExportMission);
+            this.ExportMissionCommand = new RelayCommand(this.ExportMission, t => this.CurrentMission != null);
 
             _eventAggregator.GetEvent<UpdateMissionEvent>().Subscribe(Update_Mission);
         }
@@ -61,11 +62,6 @@ namespace Interop.Modules.Details.ViewModels
             System.IO.File.WriteAllText("interop.mission", jsonToExport);
         }
 
-        private bool CanExportMission()
-        {
-            return (this.CurrentMission != null);
-        }
-
         private Mission _mission;
         public Mission CurrentMission
         {
@@ -77,7 +73,7 @@ namespace Interop.Modules.Details.ViewModels
             {
                 if (SetProperty(ref _mission, value))
                 {
-                    this.ExportMissionCommand.RaiseCanExecuteChanged();
+                    //this.ExportMissionCommand.RaiseCanExecuteChanged();
                     GpsPoints = _mission.GetAllGpsPoints();
                     _eventAggregator.GetEvent<UpdateSelectedMission>().Publish(_mission);
                 }

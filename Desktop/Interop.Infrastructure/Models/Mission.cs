@@ -29,7 +29,7 @@ namespace Interop.Infrastructure.Models
         [JsonProperty("mission_waypoints")]
         public List<Waypoint> Waypoints { get; set; }
 
-        [JsonProperty("off_axis_target_pos")]
+        [JsonProperty("off_axis_odlc_pos")]
         public OffAxisTargetPosition OffAxisTargetPosition { get; set; }
 
         [JsonProperty("emergent_last_known_pos")]

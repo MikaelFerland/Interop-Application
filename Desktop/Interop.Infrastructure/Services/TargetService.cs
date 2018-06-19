@@ -20,7 +20,7 @@ namespace Interop.Infrastructure.Services
         
         public TargetService(IEventAggregator eventAggregator)
         {
-            _eventAggregator = eventAggregator ?? throw new ArgumentNullException("eventAggregator");
+            _eventAggregator = eventAggregator ?? throw new ArgumentNullException(nameof(eventAggregator));
 
             NetTcpBinding binding = new NetTcpBinding();
             binding.Security.Mode = SecurityMode.None;
@@ -30,7 +30,7 @@ namespace Interop.Infrastructure.Services
             
             // Imagery server
             // todo ask this value or detect it. Do not attempt to connect to invalid ip
-            Uri baseAddress = new Uri($"net.tcp://192.168.1.163:8000/targetserver");
+            Uri baseAddress = new Uri($"net.tcp://192.168.1.163:80/targetserver");
             _serviceHost = new ServiceHost(typeof(Server.TargetServer), baseAddress);
             
             var instanceProvider = new InstanceProviderBehavior<ITargetServer>(() => new Server.TargetServer(eventAggregator));

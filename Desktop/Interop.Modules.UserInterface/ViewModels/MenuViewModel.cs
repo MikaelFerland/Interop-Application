@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Interop.Infrastructure;
 using Interop.Infrastructure.Interfaces;
 
 using Prism.Commands;
@@ -25,26 +22,18 @@ namespace Interop.Modules.UserInterface.ViewModels
 
         public MenuViewModel(IHttpService httpService, IEventAggregator eventAggregator)
         {
-            if (httpService == null)
-            {
-                throw new ArgumentNullException("httpService");
-            }
+            _httpService = httpService ?? throw new ArgumentNullException(nameof(httpService));
+            _eventAggregator = eventAggregator ?? throw new ArgumentNullException(nameof(eventAggregator));
 
-            if (eventAggregator == null)
-            {
-                throw new ArgumentNullException("eventAggregator");
-            }
-            _httpService = httpService;
-            _eventAggregator = eventAggregator;
-                        
             this.ConnectCommand = new DelegateCommand(this.ConnectClient, this.CanConnectClient);
 
             Accounts = new List<Account> {
-                new Account("192.168.1.131","testuser", "testpass", "8000"),
-                new Account("10.10.130.10","ets", "4532779881", "80")
+                new Account("10.10.130.10","ecole", "5861948105", "80"),
+                //new Account("192.168.1.131","testadmin", "testpass", "8000"),
+                //new Account("10.10.130.10","ets", "4532779881", "80")
             };
 
-            CurrentAccount = Accounts[1];
+            CurrentAccount = Accounts[0];
         }
 
         public List<Account> Accounts { get; set; }
@@ -52,10 +41,7 @@ namespace Interop.Modules.UserInterface.ViewModels
         private Account _currentAccount;
         public Account CurrentAccount
         {
-            get
-            {
-                return _currentAccount;
-            }
+            get => _currentAccount;
 
             set
             {
@@ -66,67 +52,23 @@ namespace Interop.Modules.UserInterface.ViewModels
             }
         }
 
-        private string _hostAddress = "192.168.99.100";
-        public string HostAddress
-        {
-            get { return _hostAddress; }
-            set
-            {
-                if (SetProperty(ref _hostAddress, value))
-                {
-
-                }
-            }
-        }
-
-        private string _username = "testuser";
-        public string Username
-        {
-            get { return _username; }
-            set
-            {                
-                if (SetProperty(ref _username, value))
-                {
-                    //this.OnPropertyChanged(() => this.);
-                }
-            }
-        }
-
-        private string _password = "testpass";
-        public string Password
-        {
-            get { return _password; }
-            set
-            {                
-                if (SetProperty(ref _password, value))
-                {
-                    //this.OnPropertyChanged(() => this.);
-                }
-            }
-        }
-
         private bool _connected = false;
 
         private string _connectionStatus = "Connect";
         public string ConnectionStatus
         {
-            get
-            {
-                return _connectionStatus;
-            }
+            get => _connectionStatus;
             set
             {
-
                 if (SetProperty(ref _connectionStatus, value))
                 {
-                    //this.OnPropertyChanged(() => this.);
                 }
             }
         }
 
         private void ConnectClient()
         {
-            if (_connected == true)
+            if (_connected)
             {
                 DisconnectClient();
             }
@@ -140,20 +82,21 @@ namespace Interop.Modules.UserInterface.ViewModels
                     ConnectionStatus = "Connect";
                 });
 
-                Task.Factory.StartNew(async () => {
+                Task.Factory.StartNew(async () =>
+                {
                     _connected = await _httpService.Login(CurrentAccount.Username, CurrentAccount.Password, CurrentAccount.HostAddress, CurrentAccount.Port).ConfigureAwait(false);
 
-                    if (_connected == true)
+                    if (_connected)
                     {
                         ConnectionStatus = "Disconnect";
-                        _eventAggregator.GetEvent<UpdateLoginStatusEvent>().Publish(string.Format($"Connected as {Username}"));
+                        _eventAggregator.GetEvent<UpdateLoginStatusEvent>().Publish(string.Format($"Connected"));
 
                         await _httpService.Run(_connectionCancellationSource.Token).ConfigureAwait(false);
 
                     }
                     _connectionCancellationSource.Dispose();
                 }, TaskCreationOptions.LongRunning);
-            }            
+            }
         }
 
         private void DisconnectClient()
@@ -175,17 +118,11 @@ namespace Interop.Modules.UserInterface.ViewModels
                 Password = password;
                 Port = port;
             }
-            public string HostAddress { get; private set; }
-            public string Username { get; private set; }
-            public string Password { get; private set; }
-            public string Port { get; private set; }
-            public string Name
-            {
-                get
-                {
-                    return $"{Username}@{HostAddress}";
-                }
-            }
+            public string HostAddress { get; }
+            public string Username { get; }
+            public string Password { get; }
+            public string Port { get; }
+            public string Name => $"{Username}@{HostAddress}";
         }
     }
 }

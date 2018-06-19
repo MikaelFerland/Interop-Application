@@ -47,7 +47,7 @@ namespace Interop.Infrastructure.Services
                     if (_udpClient == null)
                     {
                         _udpClient = new UdpClient();
-                        IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 14551);
+                        IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5555);
                         _udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                         _udpClient.Client.Bind(RemoteIpEndPoint);
                     }

@@ -117,6 +117,10 @@ namespace Interop.Modules.Details.ViewModels
                                     var imageSource = imageConverter.ConvertFrom(currentImage);
                                     DisplayedImage = (BitmapSource)imageSource;
                                 }
+                                else
+                                {
+                                    DisplayedImage = null;
+                                }
 
                                 //using (var ms = new System.IO.MemoryStream(currentImage))
                                 //{
@@ -143,16 +147,16 @@ namespace Interop.Modules.Details.ViewModels
             }
         }
 
+
+        
         ImageSource _displayedImage;
         public ImageSource DisplayedImage
         {
-            get { return this._displayedImage; }
+            get => this._displayedImage;
             set
             {
-                if (SetProperty(ref _displayedImage, value))
-                {
-                    //this.OnPropertyChanged(() => this.);
-                }
+                this._displayedImage = value;
+                this.RaisePropertyChanged(nameof(this.DisplayedImage));
             }
         }
 

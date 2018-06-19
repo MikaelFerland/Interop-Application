@@ -19,7 +19,7 @@ namespace Interop.Examples.Server
 
             string myIP = GetLocalIPAddress();
 
-            Uri baseAddress = new Uri($"net.tcp://{myIP}:8000/targetserver");
+            Uri baseAddress = new Uri($"net.tcp://{myIP}:80/targetserver");
             _serviceHost = new ServiceHost(typeof(TargetServer), baseAddress);
             _serviceHost.AddServiceEndpoint(typeof(ITargetServer), binding, baseAddress);
             

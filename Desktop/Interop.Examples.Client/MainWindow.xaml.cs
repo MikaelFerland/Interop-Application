@@ -61,7 +61,7 @@ namespace Interop.Examples.Client
 
             string myIP = GetLocalIPAddress();
 
-            Uri baseAddress = new Uri($"net.tcp://192.168.1.107:8000/targetserver");
+            Uri baseAddress = new Uri($"net.tcp://192.168.1.163:8000/targetserver");
             EndpointAddress address = new EndpointAddress(baseAddress);
             ChannelFactory<ITargetServer> channelFactory = new ChannelFactory<ITargetServer>(binding, address);
             _targetServer = channelFactory.CreateChannel();
@@ -124,10 +124,6 @@ namespace Interop.Examples.Client
             interopMessage.BackgroundColor = InteropTargetMessage.Colors.black;
             interopMessage.ForegroundColor = InteropTargetMessage.Colors.blue;
             interopMessage.Description = "What's up guys? Nice to meet you.";
-
-            double area;
-            double.TryParse(tbx_area.Text, out area);
-            interopMessage.Area = area;
 
             if (this._displayedImage != null)
             {
