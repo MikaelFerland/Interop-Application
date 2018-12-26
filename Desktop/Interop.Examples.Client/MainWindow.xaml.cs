@@ -48,8 +48,6 @@ namespace Interop.Examples.Client
             tbx_character.Text = "r";
             tbx_backgroundColor.Text = InteropTargetMessage.Colors.black.ToString();
             tbx_foregroundColor.Text = InteropTargetMessage.Colors.blue.ToString();
-            tbx_area.Text = "125000";
-
 
             RunClient();
         }
