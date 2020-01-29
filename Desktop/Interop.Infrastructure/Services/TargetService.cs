@@ -38,7 +38,7 @@ namespace Interop.Infrastructure.Services
             instanceProvider.AddToAllContracts(_serviceHost);
 
             // todo disconnect
-            _serviceHost.Open();
+            //_serviceHost.Open();
                 
             Console.WriteLine(String.Format("The Target server is ready at {0}.", baseAddress));
         }

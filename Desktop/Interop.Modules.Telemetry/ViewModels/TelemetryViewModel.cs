@@ -11,21 +11,13 @@ namespace Interop.Modules.Telemetry.ViewModels
 	public class TelemetryViewModel : BindableBase
 	{
 		IEventAggregator _eventAggregator;
+        IMavlinkService _mavlinkService;
 		static Timer _watchdog;
 
-		public TelemetryViewModel(IEventAggregator eventAggregator, ITelemetryService mavlinkService)
+		public TelemetryViewModel(IEventAggregator eventAggregator, IMavlinkService mavlinkService)
 		{
-			if (eventAggregator == null)
-			{
-				throw new ArgumentNullException("eventAggregator");
-			}
-
-			if (mavlinkService == null)
-			{
-				throw new ArgumentNullException("telemetryService");
-			}
-
-			_eventAggregator = eventAggregator;
+            _eventAggregator = eventAggregator ?? throw new ArgumentNullException(nameof(eventAggregator));
+            _mavlinkService = mavlinkService ?? throw new ArgumentNullException(nameof(mavlinkService));
 
 			_watchdog = new Timer(1000);
 			_watchdog.Elapsed += new ElapsedEventHandler(Timer_Elapsed);

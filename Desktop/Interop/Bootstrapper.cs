@@ -33,7 +33,7 @@ namespace Interop
             catalog.AddModule(typeof(UserInterfaceModule));
             catalog.AddModule(typeof(MapModule));
             catalog.AddModule(typeof(DetailsModule));
-            catalog.AddModule(typeof(TelemetryModule));
+            catalog.AddModule(typeof(TelemetryModule));            
         }
 
         protected override void ConfigureContainer()
@@ -41,8 +41,8 @@ namespace Interop
             base.ConfigureContainer();
             
             this.RegisterTypeIfMissing(typeof(IHttpService), typeof(Infrastructure.Services.HttpService), true);
-            this.RegisterTypeIfMissing(typeof(ITelemetryService), typeof(Infrastructure.Services.TelemetryService), true);
             this.RegisterTypeIfMissing(typeof(ITargetService), typeof(Infrastructure.Services.TargetService), true);
+            this.RegisterTypeIfMissing(typeof(IMavlinkService), typeof(Infrastructure.Services.MavlinkService), true);
         }
     }
 }
