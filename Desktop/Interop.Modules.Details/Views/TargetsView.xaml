@@ -8,7 +8,20 @@
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="300">
-
+    <UserControl.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Grid.Column" Value="1"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Margin" Value="0,0,5,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="Grid.Column" Value="0"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+    </UserControl.Resources>
     <DockPanel LastChildFill="True">
         <ListBox x:Name="lv_targets" DockPanel.Dock="Top" Height="100" BorderBrush="Black" Background="White" Foreground="Black" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" ItemsSource="{Binding Targets}" SelectedItem="{Binding CurrentTarget}" DisplayMemberPath="id" IsSynchronizedWithCurrentItem="True"/>
 
@@ -38,30 +51,30 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="0" Foreground="Black">User</Label>
-            <Label Grid.Row="1" Grid.Column="0" Foreground="Black">Type</Label>
-            <Label Grid.Row="2" Grid.Column="0" Foreground="Black">Latitude</Label>
-            <Label Grid.Row="3" Grid.Column="0" Foreground="Black">Longitude</Label>
-            <Label Grid.Row="4" Grid.Column="0" Foreground="Black">Orientation</Label>
-            <Label Grid.Row="5" Grid.Column="0" Foreground="Black">Shape</Label>
-            <Label Grid.Row="6" Grid.Column="0" Foreground="Black">Bg color</Label>
-            <Label Grid.Row="7" Grid.Column="0" Foreground="Black">Alphanumeric</Label>
-            <Label Grid.Row="8" Grid.Column="0" Foreground="Black">Alphanumeric_color</Label>
-            <Label Grid.Row="9" Grid.Column="0" Foreground="Black">Autonomous</Label>
-            <Label Grid.Row="10" Grid.Column="0" Foreground="Black">Description</Label>
+            <Label Grid.Row="0">User</Label>
+            <Label Grid.Row="1">Type</Label>
+            <Label Grid.Row="2">Latitude</Label>
+            <Label Grid.Row="3">Longitude</Label>
+            <Label Grid.Row="4">Orientation</Label>
+            <Label Grid.Row="5">Shape</Label>
+            <Label Grid.Row="6">Bg color</Label>
+            <Label Grid.Row="7">Alphanumeric</Label>
+            <Label Grid.Row="8">Alphanumeric_color</Label>
+            <Label Grid.Row="9">Autonomous</Label>
+            <Label Grid.Row="10">Description</Label>
 
-            <TextBox Grid.Row="0"  Grid.Column="1" BorderBrush="Black" Background="White" Foreground="Black" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.user}" />
-            <TextBox Grid.Row="1"  Grid.Column="1" BorderBrush="Black" Background="White" Foreground="Black" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.type}"/>
-            <TextBox Grid.Row="2"  Grid.Column="1" BorderBrush="Black" Background="White" Foreground="Black" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.latitude}"/>
-            <TextBox Grid.Row="3"  Grid.Column="1" BorderBrush="Black" Background="White" Foreground="Black" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.longitude}"/>
-            <TextBox Grid.Row="4"  Grid.Column="1" BorderBrush="Black" Background="White" Foreground="Black" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.orientation}"/>
-            <TextBox Grid.Row="5"  Grid.Column="1" BorderBrush="Black" Background="White" Foreground="Black" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.shape}"/>
-            <TextBox Grid.Row="6"  Grid.Column="1" BorderBrush="Black" Background="White" Foreground="Black" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.background_color}"/>
-            <TextBox Grid.Row="7"  Grid.Column="1" BorderBrush="Black" Background="White" Foreground="Black" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.alphanumeric}"/>
-            <TextBox Grid.Row="8"  Grid.Column="1" BorderBrush="Black" Background="White" Foreground="Black" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.alphanumeric_color}"/>
-            <TextBox Grid.Row="9"  Grid.Column="1" BorderBrush="Black" Background="White" Foreground="Black" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.autonomous}"/>
-            <TextBox Grid.Row="10"  Grid.Column="1" BorderBrush="Black" Background="White" Foreground="Black" Margin="0,0,5,0" Text="{Binding Path=CurrentTarget.description}"/>
-            <Image   Grid.Row="11"  Grid.ColumnSpan="2" Height="Auto" Width="Auto" Margin="10"  HorizontalAlignment="Left" VerticalAlignment="Top" Source="{Binding DisplayedImage}"/>
+            <TextBox Grid.Row="0" Text="{Binding Path=CurrentTarget.user}" />
+            <TextBox Grid.Row="1" Text="{Binding Path=CurrentTarget.type}"/>
+            <TextBox Grid.Row="2" Text="{Binding Path=CurrentTarget.latitude}"/>
+            <TextBox Grid.Row="3" Text="{Binding Path=CurrentTarget.longitude}"/>
+            <TextBox Grid.Row="4" Text="{Binding Path=CurrentTarget.orientation}"/>
+            <TextBox Grid.Row="5" Text="{Binding Path=CurrentTarget.shape}"/>
+            <TextBox Grid.Row="6" Text="{Binding Path=CurrentTarget.background_color}"/>
+            <TextBox Grid.Row="7" Text="{Binding Path=CurrentTarget.alphanumeric}"/>
+            <TextBox Grid.Row="8" Text="{Binding Path=CurrentTarget.alphanumeric_color}"/>
+            <TextBox Grid.Row="9" Text="{Binding Path=CurrentTarget.autonomous}"/>
+            <TextBox Grid.Row="10" Text="{Binding Path=CurrentTarget.description}"/>
+            <Image   Grid.Row="11" Grid.ColumnSpan="2" Height="Auto" Width="Auto" Margin="10"  HorizontalAlignment="Left" VerticalAlignment="Top" Source="{Binding DisplayedImage}"/>
             <Button Grid.Row="12" Grid.ColumnSpan="2" Height="Auto" Width="Auto" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Bottom" Content="Delete Image" Command="{Binding Path=DeleteTargetCommand}"/>
         </Grid>
     </DockPanel>
