@@ -1,9 +1,10 @@
 ﻿using Interop.Infrastructure.Events;
 using Interop.Infrastructure.Interfaces;
 using Interop.Infrastructure.Models;
-using Prism.Events;
+
 using MavLinkNet;
 
+using Prism.Events;
 using System;
 
 namespace Interop.Infrastructure.Services
